@@ -112,7 +112,7 @@ const FunnelColumn: React.FC<{
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`w-72 flex-shrink-0 bg-ui-background rounded-lg p-3 border border-ui-border transition-colors duration-300 h-full flex flex-col ${isOver ? 'bg-brand-primary/10' : ''}`}
+            className={`flex-1 min-w-[250px] bg-ui-background rounded-lg p-3 border border-ui-border transition-colors duration-300 h-full flex flex-col ${isOver ? 'bg-brand-primary/10' : ''}`}
         >
             <div className="flex items-center mb-2 border-b-2 pb-2 border-ui-border">
                 <h3 className="font-bold text-text-primary text-sm">{stage}</h3>
