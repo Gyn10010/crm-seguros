@@ -112,7 +112,7 @@ const FunnelColumn: React.FC<{
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`w-72 flex-shrink-0 bg-ui-background rounded-lg p-3 border border-ui-border transition-colors duration-300 ${isOver ? 'bg-brand-primary/10' : ''}`}
+            className={`w-72 flex-shrink-0 bg-ui-background rounded-lg p-3 border border-ui-border transition-colors duration-300 h-full flex flex-col ${isOver ? 'bg-brand-primary/10' : ''}`}
         >
             <div className="flex items-center mb-2 border-b-2 pb-2 border-ui-border">
                 <h3 className="font-bold text-text-primary text-sm">{stage}</h3>
@@ -121,7 +121,7 @@ const FunnelColumn: React.FC<{
             <p className="text-sm font-semibold text-text-primary mb-4">
                 {totalValue.toLocaleString('pt-BR', { style: 'currency', currency: ldrState.systemSettings.currency })}
             </p>
-            <div className="min-h-[200px]">
+            <div className="flex-1 overflow-y-auto min-h-0">
                 {opportunities.map(opp => <OpportunityCard key={opp.id} opportunity={opp} ldrState={ldrState} onClick={() => onCardClick(opp)} onActivityToggle={onActivityToggle} />)}
             </div>
         </div>
@@ -483,7 +483,7 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
                     </Button>
                 </div>
             </div>
-            <div className="flex-1 flex gap-4 overflow-x-auto pb-4">
+            <div className="flex-grow flex gap-4 overflow-x-auto pb-4 min-h-0">
                 {currentFunnelStages.map(stage => (
                     <FunnelColumn
                         key={stage}
