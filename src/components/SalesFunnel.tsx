@@ -455,8 +455,8 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
     };
 
     return (
-        <div className="flex flex-col h-full space-y-4">
-            <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="flex flex-col h-full p-6">
+            <div className="flex justify-between items-center flex-wrap gap-4 mb-4">
                 <div className="flex items-center gap-2 bg-ui-hover p-1 rounded-lg flex-wrap">
                     {funnelConfigurations.map(funnel => (
                         <button
