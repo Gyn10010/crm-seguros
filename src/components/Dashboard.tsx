@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { PolicyStatus, PolicyType, NewSalesFunnelStage } from '../types/index';
+import { PolicyStatus, PolicyType } from '../types/index';
 import { LDRState } from '../hooks/useLDRState';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 interface DashboardProps {
-  ldrState: LDRState;
+    ldrState: LDRState;
 }
 
 const StatCard: React.FC<{ title: string; value: string | number; description: string }> = ({ title, value, description }) => (
@@ -32,7 +32,7 @@ const getStatusClass = (status: PolicyStatus) => {
 
 const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
     const { clients, policies, opportunities, users, systemSettings } = ldrState;
-    
+
     const upcomingRenewals = policies.filter(p => {
         const renewalDate = new Date(p.endDate);
         const today = new Date();
@@ -55,8 +55,8 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
         return value.toLocaleString('pt-BR', { style: 'currency', currency: systemSettings.currency });
     }
 
-    const wonOpportunities = opportunities.filter(o => o.stage === NewSalesFunnelStage.ClosedWon).length;
-    const lostOpportunities = opportunities.filter(o => o.stage === NewSalesFunnelStage.ClosedLost).length;
+    const wonOpportunities = opportunities.filter(o => o.stage === 'Fechado Ganho').length;
+    const lostOpportunities = opportunities.filter(o => o.stage === 'Fechado Perdido').length;
 
     const opportunitiesStatusData = [
         { name: 'Ganhos', value: wonOpportunities, fill: '#00875A' },
@@ -64,7 +64,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
     ];
 
     const salesByPerson = opportunities.reduce((acc, opp) => {
-        if (opp.stage === NewSalesFunnelStage.ClosedWon) {
+        if (opp.stage === 'Fechado Ganho') {
             if (!acc[opp.salesperson]) {
                 acc[opp.salesperson] = { wonValue: 0, wonCount: 0 };
             }
@@ -73,7 +73,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
         }
         return acc;
     }, {} as Record<string, { wonValue: number, wonCount: number }>);
-    
+
     const salesChartData = Object.entries(salesByPerson).map(([name, data]) => ({
         name: name.split(' ')[0],
         'Prêmio (R$)': data.wonValue,
@@ -109,7 +109,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
                 <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                     <h3 className="font-bold text-text-primary mb-4">Oportunidades Ganhos vs. Perdidos</h3>
                     <ResponsiveContainer width="100%" height={300}>
-                         <BarChart data={opportunitiesStatusData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <BarChart data={opportunitiesStatusData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                             <XAxis type="number" />
                             <YAxis type="category" dataKey="name" width={60} />
@@ -123,12 +123,12 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
                     </ResponsiveContainer>
                 </div>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                     <h3 className="font-bold text-text-primary mb-4">Desempenho por Vendedor (Negócios Ganhos)</h3>
                     <ResponsiveContainer width="100%" height={300}>
-                         <BarChart data={salesChartData}>
+                        <BarChart data={salesChartData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" />
                             <YAxis yAxisId="left" orientation="left" stroke="#0052CC" />
@@ -140,9 +140,9 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
-                 <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
+                <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                     <h3 className="font-bold text-text-primary mb-4">Apólices Recentes</h3>
-                     <div className="overflow-x-auto">
+                    <div className="overflow-x-auto">
                         <table className="min-w-full bg-ui-card">
                             <thead className="bg-ui-card">
                                 <tr>
@@ -157,7 +157,7 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
                                         <td className="py-3 px-4 whitespace-nowrap text-sm text-text-primary">{clients.find(c => c.id === policy.clientId)?.name}</td>
                                         <td className="py-3 px-4 whitespace-nowrap text-sm text-text-secondary">{policy.type}</td>
                                         <td className="py-3 px-4 whitespace-nowrap">
-                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(policy.status)}`}>
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(policy.status)}`}>
                                                 {policy.status}
                                             </span>
                                         </td>
