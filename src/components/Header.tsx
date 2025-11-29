@@ -8,9 +8,10 @@ interface HeaderProps {
   onLogoutRequest: () => void;
   currentUser: User;
   companyName: string;
+  pageTitle?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, onLogoutRequest, currentUser, companyName }) => {
+const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, onLogoutRequest, currentUser, companyName, pageTitle }) => {
   const allNavItems = [
     { page: Page.Dashboard, label: 'Dashboard', icon: <DashboardIcon /> },
     { page: Page.Clients, label: 'Clientes', icon: <ClientsIcon /> },
@@ -23,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, onLogoutRe
   ];
 
   // If user has permissions array with items, show only those. Otherwise show everything (for admins)
-  const visibleNavItems = currentUser.permissions.length > 0 
+  const visibleNavItems = currentUser.permissions.length > 0
     ? allNavItems.filter(item => currentUser.permissions.includes(item.page))
     : allNavItems;
 
@@ -40,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, onLogoutRe
     <header className="w-full bg-ui-card text-text-primary flex items-center justify-between border-b border-ui-border p-4 shadow-sm">
       <div className="flex items-center gap-8">
         <div className="text-center">
-            <h1 className="text-2xl font-bold tracking-wider text-brand-primary">{companyName}</h1>
+          <h1 className="text-2xl font-bold tracking-wider text-brand-primary">{companyName}</h1>
         </div>
         <nav>
           <ul className="flex items-center gap-2">
@@ -49,11 +50,10 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, onLogoutRe
                 <button
                   onClick={() => setCurrentPage(item.page)}
                   title={item.label}
-                  className={`p-3 rounded-md transition-colors duration-200 ${
-                    currentPage === item.page
+                  className={`p-3 rounded-md transition-colors duration-200 ${currentPage === item.page
                       ? 'bg-brand-primary/10 text-brand-primary'
                       : 'text-text-secondary hover:bg-ui-hover hover:text-text-primary'
-                  }`}
+                    }`}
                 >
                   {item.icon}
                 </button>
@@ -63,9 +63,15 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, onLogoutRe
         </nav>
       </div>
 
+      {pageTitle && (
+        <div className="flex-1 flex justify-center">
+          <h2 className="text-xl font-bold text-text-primary">{pageTitle}</h2>
+        </div>
+      )}
+
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
-          <div 
+          <div
             className="w-10 h-10 rounded-full bg-brand-primary flex items-center justify-center font-bold text-sm cursor-default overflow-hidden shrink-0"
           >
             {currentUser.avatarUrl ? (

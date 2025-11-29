@@ -163,9 +163,10 @@ function AppContent() {
         onLogoutRequest={() => setIsLogoutModalOpen(true)}
         currentUser={currentUser}
         companyName={ldrState.systemSettings.companyName}
+        pageTitle={currentPage === Page.SalesFunnel ? 'Funil de Vendas' : undefined}
       />
-      <main className="flex-1 p-6">
-        <div className="max-w-[1400px] mx-auto">
+      <main className={`flex-1 ${currentPage === Page.SalesFunnel ? 'flex flex-col overflow-hidden' : 'p-6'}`}>
+        <div className={currentPage === Page.SalesFunnel ? 'flex-1 flex flex-col overflow-hidden' : 'max-w-[1400px] mx-auto'}>
           {renderContent()}
         </div>
       </main>

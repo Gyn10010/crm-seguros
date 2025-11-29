@@ -112,7 +112,7 @@ const FunnelColumn: React.FC<{
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`flex-1 min-w-[250px] bg-ui-background rounded-lg p-3 border border-ui-border transition-colors duration-300 h-full flex flex-col ${isOver ? 'bg-brand-primary/10' : ''}`}
+            className={`w-80 flex-shrink-0 bg-ui-background rounded-lg p-3 border border-ui-border transition-colors duration-300 h-full flex flex-col ${isOver ? 'bg-brand-primary/10' : ''}`}
         >
             <div className="flex items-center mb-2 border-b-2 pb-2 border-ui-border">
                 <h3 className="font-bold text-text-primary text-sm">{stage}</h3>
@@ -455,9 +455,8 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
     };
 
     return (
-        <div className="flex flex-col h-full space-y-6">
-            <h1 className="text-3xl font-bold text-text-primary">Funil de Vendas</h1>
-            <div className="mb-6 flex justify-between items-center flex-wrap gap-4">
+        <div className="flex flex-col h-full space-y-4">
+            <div className="flex justify-between items-center flex-wrap gap-4">
                 <div className="flex items-center gap-2 bg-ui-hover p-1 rounded-lg flex-wrap">
                     {funnelConfigurations.map(funnel => (
                         <button
