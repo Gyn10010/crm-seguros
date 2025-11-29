@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 215 26% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 26% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 26% 15%;
+
+    --primary: 213 100% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 215 26% 15%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 14% 49%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 215 26% 15%;
+
+    --destructive: 10 86% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 213 100% 40%;
+
+    --success: 158 100% 26%;
+    --success-light: 158 100% 93%;
+    
+    --warning: 38 100% 50%;
+    --warning-light: 46 100% 85%;
+    
+    --danger: 10 86% 50%;
+    --danger-light: 10 100% 93%;
+    
+    --info: 188 100% 43%;
+    --info-light: 188 100% 94%;
+
+    --text-primary: 215 26% 15%;
+    --text-secondary: 216 14% 47%;
+    --text-muted: 212 11% 62%;
+
+    --ui-background: 0 0% 97%;
+    --ui-card: 0 0% 100%;
+    --ui-border: 214 32% 91%;
+    --ui-hover: 210 40% 96%;
+
+    --brand-primary: 213 100% 40%;
+    --brand-secondary: 210 40% 96%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 215 26% 15%;
+    --foreground: 0 0% 98%;
+
+    --card: 215 26% 15%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 215 26% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 213 100% 60%;
+    --primary-foreground: 215 26% 15%;
+
+    --secondary: 216 14% 25%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 216 14% 25%;
+    --muted-foreground: 212 11% 62%;
+
+    --accent: 216 14% 25%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 10 86% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 216 14% 25%;
+    --input: 216 14% 25%;
+    --ring: 213 100% 60%;
+
+    --success: 158 100% 40%;
+    --success-light: 158 100% 20%;
+    
+    --warning: 38 100% 50%;
+    --warning-light: 38 100% 25%;
+    
+    --danger: 10 86% 50%;
+    --danger-light: 10 86% 25%;
+    
+    --info: 188 100% 50%;
+    --info-light: 188 100% 25%;
+
+    --text-primary: 0 0% 98%;
+    --text-secondary: 212 11% 62%;
+    --text-muted: 216 14% 47%;
+
+    --ui-background: 215 26% 12%;
+    --ui-card: 215 26% 15%;
+    --ui-border: 216 14% 25%;
+    --ui-hover: 216 14% 20%;
+
+    --brand-primary: 213 100% 60%;
+    --brand-secondary: 216 14% 25%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
