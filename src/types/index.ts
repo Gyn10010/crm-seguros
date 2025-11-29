@@ -1,111 +1,111 @@
 export enum Page {
-  Dashboard = 'Dashboard',
-  Clients = 'Clients',
-  Policies = 'Policies',
-  InsuranceCompanies = 'InsuranceCompanies',
-  Tasks = 'Tasks',
-  Renewals = 'Renewals',
-  Settings = 'Settings',
-  SalesFunnel = 'SalesFunnel',
+    Dashboard = 'Dashboard',
+    Clients = 'Clients',
+    Policies = 'Policies',
+    InsuranceCompanies = 'InsuranceCompanies',
+    Tasks = 'Tasks',
+    Renewals = 'Renewals',
+    Settings = 'Settings',
+    SalesFunnel = 'SalesFunnel',
 }
 
 export interface Client {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  createdAt: string;
-  personType?: 'Física' | 'Jurídica';
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  document?: string; // CPF/CNPJ
-  salesperson?: string;
-  birthDate?: string;
-  businessSector?: string;
-  monthlyIncome?: number;
-  licenseExpiry?: string;
-  isActive?: boolean;
-  maritalStatus?: string;
-  relatedClients?: Array<{ clientId: string; relationship: string }>;
-  profession?: string;
-  gender?: 'Masculino' | 'Feminino' | 'Outro' | 'Prefiro não informar';
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    createdAt: string;
+    personType?: 'Física' | 'Jurídica';
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    document?: string; // CPF/CNPJ
+    salesperson?: string;
+    birthDate?: string;
+    businessSector?: string;
+    monthlyIncome?: number;
+    licenseExpiry?: string;
+    isActive?: boolean;
+    maritalStatus?: string;
+    relatedClients?: Array<{ clientId: string; relationship: string }>;
+    profession?: string;
+    gender?: 'Masculino' | 'Feminino' | 'Outro' | 'Prefiro não informar';
 }
 
 export type PolicyType = string;
 
 export enum PolicyStatus {
-  Active = 'Ativa',
-  Pending = 'Pendente',
-  Expired = 'Expirada',
-  Canceled = 'Cancelada',
+    Active = 'Ativa',
+    Pending = 'Pendente',
+    Expired = 'Expirada',
+    Canceled = 'Cancelada',
 }
 
 export interface Policy {
-  id: string;
-  clientId: string;
-  policyNumber: string;
-  insuranceCompany: string;
-  type: PolicyType;
-  premium: number; // PRÊMIO TOTAL
-  commission: number; // COMISSÃO (percentage)
-  startDate: string; // VIGÊNCIA INICIAL
-  endDate: string; // VIGÊNCIA FINAL
-  status: PolicyStatus; // STATUS APÓLICE
-  documentType?: string; // TIPO DOCUMENTO (endosso, apólice)
-  netPremium?: number; // PRÊMIO LÍQUIDO
-  generatedCommission?: number; // COMISSÃO GERADA
-  installments?: number; // QUANTIDADE PARCELAS
-  paymentType?: string; // TIPO PAGAMENTO
-  branch?: string; // RAMO
-  product?: string; // PRODUTO
-  item?: string; // ITEM
-  proposal?: string; // PROPOSTA
-  endorsementProposal?: string; // PROPOSTA ENDOSSO
-  endorsement?: string; // ENDOSSO
-  sellerTransfer?: number; // REPASSE VENDEDOR
+    id: string;
+    clientId: string;
+    policyNumber: string;
+    insuranceCompany: string;
+    type: PolicyType;
+    premium: number; // PRÊMIO TOTAL
+    commission: number; // COMISSÃO (percentage)
+    startDate: string; // VIGÊNCIA INICIAL
+    endDate: string; // VIGÊNCIA FINAL
+    status: PolicyStatus; // STATUS APÓLICE
+    documentType?: string; // TIPO DOCUMENTO (endosso, apólice)
+    netPremium?: number; // PRÊMIO LÍQUIDO
+    generatedCommission?: number; // COMISSÃO GERADA
+    installments?: number; // QUANTIDADE PARCELAS
+    paymentType?: string; // TIPO PAGAMENTO
+    branch?: string; // RAMO
+    product?: string; // PRODUTO
+    item?: string; // ITEM
+    proposal?: string; // PROPOSTA
+    endorsementProposal?: string; // PROPOSTA ENDOSSO
+    endorsement?: string; // ENDOSSO
+    sellerTransfer?: number; // REPASSE VENDEDOR
 }
 
 export interface PolicyFieldConfig {
-  id: string;
-  userId: string;
-  fieldName: string;
-  isRequired: boolean;
+    id: string;
+    userId: string;
+    fieldName: string;
+    isRequired: boolean;
 }
 
 export interface ClientFieldConfig {
-  id: string;
-  userId: string;
-  fieldName: string;
-  isRequired: boolean;
+    id: string;
+    userId: string;
+    fieldName: string;
+    isRequired: boolean;
 }
 
 export enum TaskRecurrence {
-  None = 'Nenhuma',
-  Daily = 'Diária',
-  Weekly = 'Semanal',
-  Monthly = 'Mensal',
+    None = 'Nenhuma',
+    Daily = 'Diária',
+    Weekly = 'Semanal',
+    Monthly = 'Mensal',
 }
 
 export enum TaskStatus {
-  ToDo = 'A Fazer',
-  InProgress = 'Em Andamento',
-  Done = 'Concluído',
+    ToDo = 'A Fazer',
+    InProgress = 'Em Andamento',
+    Done = 'Concluído',
 }
 
 export interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  clientId?: string;
-  dueDate?: string;
-  recurrence: TaskRecurrence;
-  opportunityId?: string;
-  userId?: string;
-  isFunnelActivity?: boolean;
-  originalActivityId?: string;
+    id: string;
+    title: string;
+    description: string;
+    status: TaskStatus;
+    clientId?: string;
+    dueDate?: string;
+    recurrence: TaskRecurrence;
+    opportunityId?: string;
+    userId?: string;
+    isFunnelActivity?: boolean;
+    originalActivityId?: string;
 }
 
 export enum RenewalStatus {
@@ -157,6 +157,9 @@ export interface InsuranceCompanyContact {
     portalUrl?: string;
 }
 
+// DEPRECATED: These enums are kept for reference but should not be used
+// The system now uses dynamic funnels from funnel_configurations table
+/*
 export enum FunnelType {
     NewSales = 'Novos Negócios',
     PostSales = 'Pós-Venda',
@@ -235,11 +238,20 @@ export const funnelStageMap: Record<FunnelType, AllFunnelStages[]> = {
     [FunnelType.InstallmentFollowUp]: Object.values(InstallmentFollowUpFunnelStage),
     [FunnelType.Renewal]: Object.values(RenewalFunnelStage),
 };
+*/
+
+
+export enum DealType {
+    New = 'Novo',
+    Renewal = 'Renovação',
+    CrossSell = 'Cross-Sell',
+    UpSell = 'Up-Sell',
+}
 
 export interface FunnelActivity {
     id: string;
     text: string;
-    stage: AllFunnelStages;
+    stage: string; // Changed from AllFunnelStages to string for dynamic stages
     completed: boolean;
     assignedTo: string; // userId
     dueDate?: string;
@@ -248,8 +260,8 @@ export interface FunnelActivity {
 
 export interface Opportunity {
     id: string;
-    funnelType: FunnelType;
-    stage: AllFunnelStages;
+    funnelType: string; // Changed from FunnelType to string for dynamic funnels
+    stage: string; // Changed from AllFunnelStages to string for dynamic stages
     title: string;
     clientId: string;
     value: number; // premium

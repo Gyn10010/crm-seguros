@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import {
   Client, Policy, PolicyType, PolicyStatus, Task, TaskStatus, TaskRecurrence,
   Renewal, RenewalStatus, User, Page, SystemSettings, InsuranceCompanyContact,
-  Opportunity, FunnelType, DealType, NewSalesFunnelStage, FunnelActivity, AllFunnelStages, funnelStageMap,
+  Opportunity, DealType, FunnelActivity,
   FunnelActivityTemplate, FunnelConfiguration, FunnelStage
 } from '../types/index';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,8 +80,8 @@ const mockFunnelActivityTemplates: FunnelActivityTemplate[] = [
 const mockOpportunities: Opportunity[] = [
   {
     id: 'opp1',
-    funnelType: FunnelType.NewSales,
-    stage: NewSalesFunnelStage.Prospect,
+    funnelType: 'new_sales',
+    stage: 'Prospecção',
     title: 'Ana Silva - Automóvel - Novo',
     clientId: '1',
     value: 2500,
@@ -95,15 +95,15 @@ const mockOpportunities: Opportunity[] = [
     insuranceType: 'Automóvel',
     insuranceCompany: 'Porto Seguro',
     activities: [
-      { id: 'act1', text: 'Primeiro contato com cliente', stage: NewSalesFunnelStage.Prospect, completed: true, assignedTo: 'mock-user-id' },
-      { id: 'act2', text: 'Coletar dados para cotação', stage: NewSalesFunnelStage.Prospect, completed: false, assignedTo: 'mock-user-id' }
+      { id: 'act1', text: 'Primeiro contato com cliente', stage: 'Prospecção', completed: true, assignedTo: 'mock-user-id' },
+      { id: 'act2', text: 'Coletar dados para cotação', stage: 'Prospecção', completed: false, assignedTo: 'mock-user-id' }
     ],
     createdAt: new Date().toISOString().split('T')[0],
   },
   {
     id: 'opp2',
-    funnelType: FunnelType.NewSales,
-    stage: NewSalesFunnelStage.Proposal,
+    funnelType: 'new_sales',
+    stage: 'Proposta',
     title: 'Bruno Costa - Residencial - Novo',
     clientId: '2',
     value: 800,
@@ -121,8 +121,8 @@ const mockOpportunities: Opportunity[] = [
   },
   {
     id: 'opp3',
-    funnelType: FunnelType.NewSales,
-    stage: NewSalesFunnelStage.ClosedWon,
+    funnelType: 'new_sales',
+    stage: 'Fechado Ganho',
     title: 'Ana Silva - Vida - Novo',
     clientId: '1',
     value: 1200,
@@ -180,7 +180,8 @@ export interface LDRState {
   deleteInsuranceCompanyContact: (companyId: string) => void;
   addOpportunity: (opportunityData: Omit<Opportunity, 'id' | 'createdAt' | 'stage' | 'activities'>) => void;
   updateOpportunity: (opportunity: Opportunity) => void;
-  updateOpportunityStage: (opportunityId: string, newStage: AllFunnelStages) => void;
+  deleteOpportunity: (opportunityId: string) => void;
+  updateOpportunityStage: (opportunityId: string, newStage: string) => void;
   addFunnelActivity: (opportunityId: string, activityData: Omit<FunnelActivity, 'id'>) => void;
   updateFunnelActivity: (opportunityId: string, updatedActivity: FunnelActivity) => void;
   addFunnelActivityTemplate: (template: Omit<FunnelActivityTemplate, 'id' | 'orderIndex'>) => void;
@@ -333,8 +334,8 @@ const useLDRState = (): LDRState => {
         if (opportunitiesData) {
           setOpportunities(opportunitiesData.map(o => ({
             id: o.id,
-            funnelType: o.funnel_type as FunnelType,
-            stage: o.stage as AllFunnelStages,
+            funnelType: o.funnel_type,
+            stage: o.stage,
             title: o.title,
             clientId: o.client_id,
             value: o.value,
@@ -352,7 +353,7 @@ const useLDRState = (): LDRState => {
             activities: o.funnel_activities.map((fa: any) => ({
               id: fa.id,
               text: fa.text,
-              stage: fa.stage as AllFunnelStages,
+              stage: fa.stage,
               completed: fa.completed,
               assignedTo: fa.assigned_to,
               dueDate: fa.due_date || undefined,
@@ -401,15 +402,111 @@ const useLDRState = (): LDRState => {
           })));
         }
 
-        const { data: funnelStagesData } = await supabase.from('funnel_stages').select('*');
-        if (funnelStagesData) {
-          setFunnelStages(funnelStagesData.map(fs => ({
-            id: fs.id,
-            funnelKey: fs.funnel_key,
-            stageName: fs.stage_name,
-            stageKey: fs.stage_key,
-            orderIndex: fs.order_index,
-          })));
+        // Initialize default funnels if none exist
+        if (!funnelConfigsData || funnelConfigsData.length === 0) {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const defaultFunnels = [
+              { funnel_name: 'Vendas', funnel_key: 'new_sales', is_active: true, order_index: 0, user_id: user.id },
+              { funnel_name: 'Renovação', funnel_key: 'renewal', is_active: true, order_index: 1, user_id: user.id },
+              { funnel_name: 'Pós-Vendas', funnel_key: 'post_sales', is_active: true, order_index: 2, user_id: user.id },
+              { funnel_name: 'Endosso', funnel_key: 'endorsement', is_active: true, order_index: 3, user_id: user.id },
+              { funnel_name: 'Sinistro', funnel_key: 'claim', is_active: true, order_index: 4, user_id: user.id },
+              { funnel_name: 'Acompanhamento de Parcelas', funnel_key: 'installment_follow_up', is_active: true, order_index: 5, user_id: user.id },
+            ];
+
+            const { data: insertedFunnels, error: funnelInsertError } = await supabase
+              .from('funnel_configurations')
+              .insert(defaultFunnels)
+              .select();
+
+            if (funnelInsertError) {
+              console.error('Error inserting default funnels:', funnelInsertError);
+            } else if (insertedFunnels) {
+              // Create default stages for each funnel
+              const defaultStages = [
+                // Vendas stages
+                { funnel_key: 'new_sales', stage_name: 'Prospecção', stage_key: 'prospect', order_index: 0, user_id: user.id },
+                { funnel_key: 'new_sales', stage_name: 'Qualificação', stage_key: 'qualification', order_index: 1, user_id: user.id },
+                { funnel_key: 'new_sales', stage_name: 'Proposta', stage_key: 'proposal', order_index: 2, user_id: user.id },
+                { funnel_key: 'new_sales', stage_name: 'Negociação', stage_key: 'negotiation', order_index: 3, user_id: user.id },
+                { funnel_key: 'new_sales', stage_name: 'Fechado Ganho', stage_key: 'closed_won', order_index: 4, user_id: user.id },
+
+                // Renovação stages
+                { funnel_key: 'renewal', stage_name: 'Cálculo', stage_key: 'calculation', order_index: 0, user_id: user.id },
+                { funnel_key: 'renewal', stage_name: 'Apresentação', stage_key: 'presentation', order_index: 1, user_id: user.id },
+                { funnel_key: 'renewal', stage_name: 'Negociação', stage_key: 'negotiation', order_index: 2, user_id: user.id },
+                { funnel_key: 'renewal', stage_name: 'Fechado Ganho', stage_key: 'closed_won', order_index: 3, user_id: user.id },
+                { funnel_key: 'renewal', stage_name: 'Fechado Perdido', stage_key: 'closed_lost', order_index: 4, user_id: user.id },
+
+                // Pós-Vendas stages
+                { funnel_key: 'post_sales', stage_name: 'Emissão', stage_key: 'issuance', order_index: 0, user_id: user.id },
+                { funnel_key: 'post_sales', stage_name: 'Entrega', stage_key: 'delivery', order_index: 1, user_id: user.id },
+                { funnel_key: 'post_sales', stage_name: 'Finalizado', stage_key: 'finished', order_index: 2, user_id: user.id },
+
+                // Endosso stages
+                { funnel_key: 'endorsement', stage_name: 'Solicitação', stage_key: 'request', order_index: 0, user_id: user.id },
+                { funnel_key: 'endorsement', stage_name: 'Análise', stage_key: 'analysis', order_index: 1, user_id: user.id },
+                { funnel_key: 'endorsement', stage_name: 'Emissão', stage_key: 'issuance', order_index: 2, user_id: user.id },
+
+                // Sinistro stages
+                { funnel_key: 'claim', stage_name: 'Aviso de Sinistro', stage_key: 'notice', order_index: 0, user_id: user.id },
+                { funnel_key: 'claim', stage_name: 'Envio Documentação', stage_key: 'documentation', order_index: 1, user_id: user.id },
+                { funnel_key: 'claim', stage_name: 'Análise', stage_key: 'analysis', order_index: 2, user_id: user.id },
+                { funnel_key: 'claim', stage_name: 'Pagamento', stage_key: 'payment', order_index: 3, user_id: user.id },
+                { funnel_key: 'claim', stage_name: 'Finalizado', stage_key: 'finished', order_index: 4, user_id: user.id },
+
+                // Acompanhamento de Parcelas stages
+                { funnel_key: 'installment_follow_up', stage_name: 'Pendente', stage_key: 'pending', order_index: 0, user_id: user.id },
+                { funnel_key: 'installment_follow_up', stage_name: 'Contatado', stage_key: 'contacted', order_index: 1, user_id: user.id },
+                { funnel_key: 'installment_follow_up', stage_name: 'Pago', stage_key: 'paid', order_index: 2, user_id: user.id },
+                { funnel_key: 'installment_follow_up', stage_name: 'Vencido', stage_key: 'overdue', order_index: 3, user_id: user.id },
+              ];
+
+              const { error: stagesInsertError } = await supabase
+                .from('funnel_stages')
+                .insert(defaultStages);
+
+              if (stagesInsertError) {
+                console.error('Error inserting default stages:', stagesInsertError);
+              }
+
+              // Reload funnel data
+              const { data: reloadedFunnels } = await supabase.from('funnel_configurations').select('*');
+              if (reloadedFunnels) {
+                setFunnelConfigurations(reloadedFunnels.map(fc => ({
+                  id: fc.id,
+                  funnelName: fc.funnel_name,
+                  funnelKey: fc.funnel_key,
+                  isActive: fc.is_active,
+                  orderIndex: fc.order_index,
+                })));
+              }
+
+              const { data: reloadedStages } = await supabase.from('funnel_stages').select('*');
+              if (reloadedStages) {
+                setFunnelStages(reloadedStages.map(fs => ({
+                  id: fs.id,
+                  funnelKey: fs.funnel_key,
+                  stageName: fs.stage_name,
+                  stageKey: fs.stage_key,
+                  orderIndex: fs.order_index,
+                })));
+              }
+            }
+          }
+        } else {
+          // Load existing stages
+          const { data: funnelStagesData } = await supabase.from('funnel_stages').select('*');
+          if (funnelStagesData) {
+            setFunnelStages(funnelStagesData.map(fs => ({
+              id: fs.id,
+              funnelKey: fs.funnel_key,
+              stageName: fs.stage_name,
+              stageKey: fs.stage_key,
+              orderIndex: fs.order_index,
+            })));
+          }
         }
 
         const { data: activityTemplatesData } = await supabase.from('funnel_activity_templates').select('*');
@@ -1020,13 +1117,16 @@ const useLDRState = (): LDRState => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const initialStage = funnelStageMap[opportunityData.funnelType][0];
+    // Get the first stage of the funnel from configuration
+    const firstStage = funnelStages
+      .filter(stage => stage.funnelKey === opportunityData.funnelType)
+      .sort((a, b) => a.orderIndex - b.orderIndex)[0]?.stageName || '';
 
     const { data, error } = await supabase
       .from('opportunities')
       .insert({
         funnel_type: opportunityData.funnelType,
-        stage: initialStage,
+        stage: firstStage,
         title: opportunityData.title,
         client_id: opportunityData.clientId,
         value: opportunityData.value,
@@ -1048,8 +1148,8 @@ const useLDRState = (): LDRState => {
     if (data && !error) {
       const newOpportunity: Opportunity = {
         id: data.id,
-        funnelType: data.funnel_type as FunnelType,
-        stage: data.stage as AllFunnelStages,
+        funnelType: data.funnel_type,
+        stage: data.stage,
         title: data.title,
         clientId: data.client_id,
         value: typeof data.value === 'string' ? parseFloat(data.value) : data.value,
@@ -1097,7 +1197,7 @@ const useLDRState = (): LDRState => {
     }
   }, []);
 
-  const updateOpportunityStage = useCallback(async (opportunityId: string, newStage: AllFunnelStages) => {
+  const updateOpportunityStage = useCallback(async (opportunityId: string, newStage: string) => {
     const { error } = await supabase
       .from('opportunities')
       .update({ stage: newStage })
@@ -1108,17 +1208,17 @@ const useLDRState = (): LDRState => {
     }
   }, []);
 
-  const addFunnelActivity = useCallback(async (opportunityId: string, activityData: Omit<FunnelActivity, 'id'>) => {
+  const addFunnelActivity = useCallback(async (opportunityId: string, activity: Omit<FunnelActivity, 'id'>) => {
     const { data, error } = await supabase
       .from('funnel_activities')
       .insert({
         opportunity_id: opportunityId,
-        text: activityData.text,
-        stage: activityData.stage,
-        completed: activityData.completed,
-        assigned_to: activityData.assignedTo,
-        due_date: activityData.dueDate || null,
-        due_time: activityData.dueTime || null,
+        text: activity.text,
+        stage: activity.stage,
+        completed: activity.completed,
+        assigned_to: activity.assignedTo,
+        due_date: activity.dueDate || null,
+        due_time: activity.dueTime || null,
       })
       .select()
       .single();
@@ -1127,7 +1227,7 @@ const useLDRState = (): LDRState => {
       const newActivity: FunnelActivity = {
         id: data.id,
         text: data.text,
-        stage: data.stage as AllFunnelStages,
+        stage: data.stage,
         completed: data.completed,
         assignedTo: data.assigned_to,
         dueDate: data.due_date || undefined,
