@@ -34,7 +34,7 @@ const getInitials = (name: string) => {
     if (!name) return '';
     const names = name.split(' ');
     if (names.length > 1 && names[1]) {
-      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+        return `${names[0][0]}${names[1][0]}`.toUpperCase();
     }
     return name.substring(0, 2).toUpperCase();
 };
@@ -58,7 +58,7 @@ const AccordionSection: React.FC<{ title: string; children: React.ReactNode; isO
     );
 };
 
-const GeneralSettings: React.FC<{ldrState: LDRState}> = ({ ldrState }) => {
+const GeneralSettings: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
     const { systemSettings, updateSystemSettings } = ldrState;
 
     const handleSettingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,17 +70,17 @@ const GeneralSettings: React.FC<{ldrState: LDRState}> = ({ ldrState }) => {
         <div className="space-y-4">
             <div>
                 <label htmlFor="companyName" className="block text-sm font-medium text-text-secondary mb-1">Nome da Empresa</label>
-                <input type="text" name="companyName" id="companyName" value={systemSettings.companyName} onChange={handleSettingChange} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                <input type="text" name="companyName" id="companyName" value={systemSettings.companyName} onChange={handleSettingChange} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
             </div>
             <div className="flex items-center gap-4">
                 <label htmlFor="themeColor" className="block text-sm font-medium text-text-secondary">Cor do Tema</label>
-                <input type="color" name="themeColor" id="themeColor" value={systemSettings.themeColor} onChange={handleSettingChange} className="h-10 w-10"/>
+                <input type="color" name="themeColor" id="themeColor" value={systemSettings.themeColor} onChange={handleSettingChange} className="h-10 w-10" />
             </div>
         </div>
     );
 };
 
-const ListManagement: React.FC<{title: string; items: string[]; onAdd: (item: string) => void; onDelete: (item: string) => void; placeholder: string;}> = ({ title, items, onAdd, onDelete, placeholder }) => {
+const ListManagement: React.FC<{ title: string; items: string[]; onAdd: (item: string) => void; onDelete: (item: string) => void; placeholder: string; }> = ({ title, items, onAdd, onDelete, placeholder }) => {
     const [newItem, setNewItem] = useState('');
 
     const handleAddItem = () => {
@@ -94,7 +94,7 @@ const ListManagement: React.FC<{title: string; items: string[]; onAdd: (item: st
         <div>
             <h3 className="text-lg font-semibold text-text-primary mb-2">{title}</h3>
             <div className="flex gap-2 mb-4">
-                <input 
+                <input
                     type="text"
                     value={newItem}
                     onChange={(e) => setNewItem(e.target.value)}
@@ -117,18 +117,18 @@ const ListManagement: React.FC<{title: string; items: string[]; onAdd: (item: st
     );
 };
 
-const AlertSettings: React.FC<{ldrState: LDRState}> = ({ ldrState }) => {
+const AlertSettings: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
     const { systemSettings, updateSystemSettings } = ldrState;
 
     return (
         <div className="space-y-4">
-             <div>
+            <div>
                 <label htmlFor="renewalAlertDays" className="block text-sm font-medium text-text-secondary mb-1">Alerta de Renovação (dias de antecedência)</label>
-                <input type="number" name="renewalAlertDays" id="renewalAlertDays" value={systemSettings.renewalAlertDays} onChange={e => updateSystemSettings({ renewalAlertDays: parseInt(e.target.value, 10) || 0 })} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                <input type="number" name="renewalAlertDays" id="renewalAlertDays" value={systemSettings.renewalAlertDays} onChange={e => updateSystemSettings({ renewalAlertDays: parseInt(e.target.value, 10) || 0 })} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
             </div>
             <div>
                 <label htmlFor="currency" className="block text-sm font-medium text-text-secondary mb-1">Moeda (código de 3 letras, ex: BRL, USD)</label>
-                <input type="text" name="currency" id="currency" maxLength={3} value={systemSettings.currency} onChange={e => updateSystemSettings({ currency: e.target.value.toUpperCase() })} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                <input type="text" name="currency" id="currency" maxLength={3} value={systemSettings.currency} onChange={e => updateSystemSettings({ currency: e.target.value.toUpperCase() })} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
             </div>
         </div>
     );
@@ -136,8 +136,8 @@ const AlertSettings: React.FC<{ldrState: LDRState}> = ({ ldrState }) => {
 
 
 const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
-     const { users, addUser, updateUser, deleteUser, refreshUsers } = ldrState;
-    
+    const { users, addUser, updateUser, deleteUser, refreshUsers } = ldrState;
+
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [userFormData, setUserFormData] = useState<Omit<User, 'id'>>({
@@ -147,7 +147,7 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const formRef = useRef<HTMLFormElement>(null);
-    
+
     const pageNames: { [key in Page]?: string } = {
         [Page.Dashboard]: 'Dashboard',
         [Page.Clients]: 'Clientes',
@@ -282,7 +282,7 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
             </div>
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-ui-card">
-                     <thead className="bg-ui-card">
+                    <thead className="bg-ui-card">
                         <tr>
                             <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Nome</th>
                             <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Email</th>
@@ -309,8 +309,8 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
                                 <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{user.role}</td>
                                 <td className="py-4 px-4 whitespace-nowrap text-sm font-medium">
                                     <div className="flex items-center gap-4">
-                                    <button onClick={() => handleOpenUserModal(user)} className="text-text-secondary hover:text-brand-primary transition-colors"><EditIcon /></button>
-                                    <button onClick={() => deleteUser(user.id)} className="text-text-secondary hover:text-danger transition-colors"><TrashIcon /></button>
+                                        <button onClick={() => handleOpenUserModal(user)} className="text-text-secondary hover:text-brand-primary transition-colors"><EditIcon /></button>
+                                        <button onClick={() => deleteUser(user.id)} className="text-text-secondary hover:text-danger transition-colors"><TrashIcon /></button>
                                     </div>
                                 </td>
                             </tr>
@@ -318,7 +318,7 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
                     </tbody>
                 </table>
             </div>
-             {isUserModalOpen && (
+            {isUserModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-ui-card p-8 rounded-lg border border-ui-border w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-2xl">
                         <h2 className="text-2xl font-bold text-text-primary mb-6">{editingUser ? 'Editar Usuário' : 'Novo Usuário'}</h2>
@@ -338,20 +338,20 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
                                             </svg>
                                         )}
                                     </span>
-                                     <input type="file" id="avatar-upload" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-                                     <label htmlFor="avatar-upload" className="cursor-pointer bg-ui-card text-text-secondary border border-ui-border rounded-md py-2 px-3 text-sm font-medium hover:bg-ui-hover">
+                                    <input type="file" id="avatar-upload" accept="image/*" onChange={handleAvatarChange} className="hidden" />
+                                    <label htmlFor="avatar-upload" className="cursor-pointer bg-ui-card text-text-secondary border border-ui-border rounded-md py-2 px-3 text-sm font-medium hover:bg-ui-hover">
                                         Alterar
-                                     </label>
+                                    </label>
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-1">Nome</label>
-                                    <input type="text" name="name" id="name" value={userFormData.name} onChange={handleUserFormChange} required className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"/>
+                                    <input type="text" name="name" id="name" value={userFormData.name} onChange={handleUserFormChange} required className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary" />
                                 </div>
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-1">Email</label>
-                                    <input type="email" name="email" id="email" value={userFormData.email} onChange={handleUserFormChange} required className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"/>
+                                    <input type="email" name="email" id="email" value={userFormData.email} onChange={handleUserFormChange} required className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary" />
                                 </div>
                                 <div>
                                     <label htmlFor="role" className="block text-sm font-medium text-text-secondary mb-1">Cargo</label>
@@ -363,11 +363,11 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
                                 {!editingUser && (
                                     <div>
                                         <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-1">Senha</label>
-                                        <input 
-                                            type="password" 
-                                            id="password" 
-                                            value={password} 
-                                            onChange={(e) => setPassword(e.target.value)} 
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             required={!editingUser}
                                             minLength={6}
                                             placeholder="Mínimo 6 caracteres"
@@ -420,9 +420,6 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold text-text-primary">Configurações do Sistema</h1>
-            <AccordionSection title="Configurações Gerais" isOpen={openAccordion === 'general'} onToggle={() => toggleAccordion('general')}>
-                <GeneralSettings ldrState={ldrState} />
-            </AccordionSection>
 
             {isAdmin && (
                 <>
@@ -438,8 +435,8 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
 
             <AccordionSection title="Configuração de Listas" isOpen={openAccordion === 'lists'} onToggle={() => toggleAccordion('lists')}>
                 <div className="space-y-8">
-                    <ListManagement title="Tipos de Apólice" items={policyTypes} onAdd={addPolicyType} onDelete={deletePolicyType} placeholder="Novo tipo de apólice"/>
-                    <ListManagement title="Origens da Oportunidade" items={origins} onAdd={addOrigin} onDelete={deleteOrigin} placeholder="Nova origem"/>
+                    <ListManagement title="Tipos de Apólice" items={policyTypes} onAdd={addPolicyType} onDelete={deletePolicyType} placeholder="Novo tipo de apólice" />
+                    <ListManagement title="Origens da Oportunidade" items={origins} onAdd={addOrigin} onDelete={deleteOrigin} placeholder="Nova origem" />
                 </div>
             </AccordionSection>
 
@@ -456,7 +453,7 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
                     <AccordionSection title="Cargos" isOpen={openAccordion === 'job-roles'} onToggle={() => toggleAccordion('job-roles')}>
                         <JobRoles />
                     </AccordionSection>
-                    
+
                     <AccordionSection title="Atividades Padrão" isOpen={openAccordion === 'activity-templates'} onToggle={() => toggleAccordion('activity-templates')}>
                         <ActivityTemplates />
                     </AccordionSection>
