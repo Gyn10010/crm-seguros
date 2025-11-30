@@ -422,49 +422,49 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
             <div className="space-y-4">
                 {isAdmin && (
                     <>
-                        <AccordionSection title="Gerenciamento de Usuários (Autenticação)" isOpen={openAccordion === 'auth-users'} onToggle={() => toggleAccordion('auth-users')}>
+                        <AccordionSection title="GERENCIAMENTO DE USUÁRIOS (AUTENTICAÇÃO)" isOpen={openAccordion === 'auth-users'} onToggle={() => toggleAccordion('auth-users')}>
                             <UserManagement />
                         </AccordionSection>
 
-                        <AccordionSection title="Gerenciamento de Equipe" isOpen={openAccordion === 'users'} onToggle={() => toggleAccordion('users')}>
+                        <AccordionSection title="GERENCIAMENTO DE EQUIPE" isOpen={openAccordion === 'users'} onToggle={() => toggleAccordion('users')}>
                             <TeamManagement ldrState={ldrState} />
                         </AccordionSection>
                     </>
                 )}
 
-                <AccordionSection title="Configuração de Listas" isOpen={openAccordion === 'lists'} onToggle={() => toggleAccordion('lists')}>
+                <AccordionSection title="CONFIGURAÇÃO DE LISTAS" isOpen={openAccordion === 'lists'} onToggle={() => toggleAccordion('lists')}>
                     <div className="space-y-8">
                         <ListManagement title="Tipos de Apólice" items={policyTypes} onAdd={addPolicyType} onDelete={deletePolicyType} placeholder="Novo tipo de apólice" />
                         <ListManagement title="Origens da Oportunidade" items={origins} onAdd={addOrigin} onDelete={deleteOrigin} placeholder="Nova origem" />
                     </div>
                 </AccordionSection>
 
-                <AccordionSection title="Funis e Estágios" isOpen={openAccordion === 'funnel-config'} onToggle={() => toggleAccordion('funnel-config')}>
+                <AccordionSection title="FUNIS E ESTÁGIOS" isOpen={openAccordion === 'funnel-config'} onToggle={() => toggleAccordion('funnel-config')}>
                     <FunnelConfigurationComponent ldrState={ldrState} />
                 </AccordionSection>
 
-                <AccordionSection title="Atividades dos Funis" isOpen={openAccordion === 'funnel-templates'} onToggle={() => toggleAccordion('funnel-templates')}>
+                <AccordionSection title="ATIVIDADES DOS FUNIS" isOpen={openAccordion === 'funnel-templates'} onToggle={() => toggleAccordion('funnel-templates')}>
                     <FunnelTemplates ldrState={ldrState} />
                 </AccordionSection>
 
                 {isAdmin && (
                     <>
-                        <AccordionSection title="Cargos" isOpen={openAccordion === 'job-roles'} onToggle={() => toggleAccordion('job-roles')}>
+                        <AccordionSection title="CARGOS" isOpen={openAccordion === 'job-roles'} onToggle={() => toggleAccordion('job-roles')}>
                             <JobRoles />
                         </AccordionSection>
 
-                        <AccordionSection title="Atividades Padrão" isOpen={openAccordion === 'activity-templates'} onToggle={() => toggleAccordion('activity-templates')}>
+                        <AccordionSection title="ATIVIDADES PADRÃO" isOpen={openAccordion === 'activity-templates'} onToggle={() => toggleAccordion('activity-templates')}>
                             <ActivityTemplates />
                         </AccordionSection>
                     </>
                 )}
 
-                <AccordionSection title="Alertas e Moeda" isOpen={openAccordion === 'alerts'} onToggle={() => toggleAccordion('alerts')}>
+                <AccordionSection title="ALERTAS E MOEDA" isOpen={openAccordion === 'alerts'} onToggle={() => toggleAccordion('alerts')}>
                     <AlertSettings ldrState={ldrState} />
                 </AccordionSection>
 
                 {isAdmin && (
-                    <AccordionSection title="Importar Apólices (CSV)" isOpen={openAccordion === 'import-csv'} onToggle={() => toggleAccordion('import-csv')}>
+                    <AccordionSection title="IMPORTAR APÓLICES (CSV)" isOpen={openAccordion === 'import-csv'} onToggle={() => toggleAccordion('import-csv')}>
                         <ImportCSV />
                     </AccordionSection>
                 )}

@@ -67,11 +67,11 @@ export const useSystem = () => {
         if (profiles) {
             const mappedUsers: User[] = profiles.map(p => ({
                 id: p.id,
-                name: p.full_name || 'Usuário',
-                email: 'email@exemplo.com', // Email not directly accessible in profiles public table usually
-                role: p.role || 'Vendedor',
+                name: p.name || 'Usuário',
+                email: p.email || 'email@exemplo.com',
+                role: (p.role === 'Gestor' || p.role === 'Vendedor') ? p.role : 'Vendedor',
                 permissions: [],
-                avatarUrl: p.avatar_url,
+                avatarUrl: p.avatar_url || '',
             }));
             setUsers(mappedUsers);
         }
