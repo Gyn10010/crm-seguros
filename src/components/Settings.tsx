@@ -419,7 +419,7 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
 
     return (
         <div className="space-y-6">
-            <Accordion type="single" collapsible className="space-y-4">
+            <div className="space-y-4">
                 {isAdmin && (
                     <>
                         <AccordionSection title="Gerenciamento de Usuários (Autenticação)" isOpen={openAccordion === 'auth-users'} onToggle={() => toggleAccordion('auth-users')}>
@@ -468,7 +468,7 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
                         <ImportCSV />
                     </AccordionSection>
                 )}
-            </Accordion>
+            </div>
         </div>
     );
 };
