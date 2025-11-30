@@ -468,6 +468,7 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
                         <ImportCSV />
                     </AccordionSection>
                 )}
+            </Accordion>
         </div>
     );
 };
