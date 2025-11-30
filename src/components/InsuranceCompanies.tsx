@@ -9,14 +9,14 @@ interface InsuranceCompaniesProps {
     ldrState: LDRState;
 }
 
-const EyeIcon: React.FC<{className?: string}> = ({ className }) => (
+const EyeIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
     </svg>
 );
 
-const EyeOffIcon: React.FC<{className?: string}> = ({ className }) => (
+const EyeOffIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 .847 0 1.67.111 2.458.318M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 3l-2.647-2.646M3 3l2.647 2.646" />
     </svg>
@@ -40,7 +40,7 @@ const InsuranceCompanyModal: React.FC<{
             setFormData(initialFormState);
         }
     }, [company, isOpen]);
-    
+
     if (!isOpen) return null;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,12 +59,12 @@ const InsuranceCompanyModal: React.FC<{
             credentials: [...formData.credentials, { id: `cred-${Date.now()}`, systemName: '', login: '', password: '' }]
         });
     };
-    
+
     const removeCredential = (index: number) => {
         const newCredentials = formData.credentials.filter((_, i) => i !== index);
         setFormData({ ...formData, credentials: newCredentials });
     };
-    
+
     const toggleShowPassword = (credId: string) => {
         setShowPasswords(prev => ({ ...prev, [credId]: !prev[credId] }));
     };
@@ -73,46 +73,46 @@ const InsuranceCompanyModal: React.FC<{
         e.preventDefault();
         onSubmit(formData);
     };
-    
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-ui-card p-8 rounded-lg border border-ui-border w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-2xl">
-                 <h2 className="text-2xl font-bold text-text-primary mb-6">{company ? 'Editar Seguradora' : 'Nova Seguradora'}</h2>
-                 <button type="button" onClick={onClose} className="absolute top-4 right-4 text-text-secondary hover:text-text-primary transition-colors" aria-label="Fechar">
+                <h2 className="text-2xl font-bold text-text-primary mb-6">{company ? 'Editar Seguradora' : 'Nova Seguradora'}</h2>
+                <button type="button" onClick={onClose} className="absolute top-4 right-4 text-text-secondary hover:text-text-primary transition-colors" aria-label="Fechar">
                     <CloseIcon />
-                 </button>
-                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
-                     <div>
+                </button>
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
+                    <div>
                         <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-1">Nome da Seguradora</label>
-                        <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                        <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="contactPerson" className="block text-sm font-medium text-text-secondary mb-1">Contato Comercial</label>
-                            <input type="text" name="contactPerson" id="contactPerson" value={formData.contactPerson} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                            <input type="text" name="contactPerson" id="contactPerson" value={formData.contactPerson} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
                         </div>
                         <div>
                             <label htmlFor="phone" className="block text-sm font-medium text-text-secondary mb-1">Telefone</label>
-                            <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                            <input type="tel" name="phone" id="phone" value={formData.phone} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
                         </div>
                     </div>
-                     <div>
+                    <div>
                         <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-1">Email</label>
-                        <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                        <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
                     </div>
                     <div>
                         <label htmlFor="portalUrl" className="block text-sm font-medium text-text-secondary mb-1">Link do Portal</label>
-                        <input type="url" name="portalUrl" id="portalUrl" value={formData.portalUrl || ''} onChange={handleChange} placeholder="https://portal.seguradora.com" className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                        <input type="url" name="portalUrl" id="portalUrl" value={formData.portalUrl || ''} onChange={handleChange} placeholder="https://portal.seguradora.com" className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
                     </div>
-                    
+
                     <div className="border-t border-ui-border pt-4 mt-4 space-y-4">
                         <h3 className="text-lg font-semibold text-text-primary">Credenciais de Acesso</h3>
                         {formData.credentials.map((cred, index) => (
                             <div key={cred.id} className="p-3 bg-ui-background rounded-md border border-ui-border grid grid-cols-1 md:grid-cols-3 gap-3 relative">
-                                <input type="text" name="systemName" placeholder="Sistema (Ex: Portal Corretor)" value={cred.systemName} onChange={e => handleCredentialChange(index, e)} className="px-3 py-2 bg-white border border-ui-border rounded-md"/>
-                                <input type="text" name="login" placeholder="Login" value={cred.login} onChange={e => handleCredentialChange(index, e)} className="px-3 py-2 bg-white border border-ui-border rounded-md"/>
+                                <input type="text" name="systemName" placeholder="Sistema (Ex: Portal Corretor)" value={cred.systemName} onChange={e => handleCredentialChange(index, e)} className="px-3 py-2 bg-white border border-ui-border rounded-md" />
+                                <input type="text" name="login" placeholder="Login" value={cred.login} onChange={e => handleCredentialChange(index, e)} className="px-3 py-2 bg-white border border-ui-border rounded-md" />
                                 <div className="relative">
-                                    <input type={showPasswords[cred.id] ? 'text' : 'password'} name="password" placeholder="Senha" value={cred.password} onChange={e => handleCredentialChange(index, e)} className="w-full px-3 py-2 bg-white border border-ui-border rounded-md"/>
+                                    <input type={showPasswords[cred.id] ? 'text' : 'password'} name="password" placeholder="Senha" value={cred.password} onChange={e => handleCredentialChange(index, e)} className="w-full px-3 py-2 bg-white border border-ui-border rounded-md" />
                                     <button type="button" onClick={() => toggleShowPassword(cred.id)} className="absolute inset-y-0 right-0 px-3 flex items-center text-text-secondary">
                                         {showPasswords[cred.id] ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                                     </button>
@@ -131,7 +131,7 @@ const InsuranceCompanyModal: React.FC<{
                             {company ? 'Salvar Alterações' : 'Adicionar Seguradora'}
                         </Button>
                     </div>
-                 </form>
+                </form>
             </div>
         </div>
     );
@@ -143,7 +143,7 @@ const InsuranceCompanies: React.FC<InsuranceCompaniesProps> = ({ ldrState }) => 
     const [editingCompany, setEditingCompany] = useState<InsuranceCompanyContact | null>(null);
     const [sortConfig, setSortConfig] = useState<{ key: keyof InsuranceCompanyContact; direction: string } | null>({ key: 'name', direction: 'ascending' });
     const [searchTerm, setSearchTerm] = useState('');
-    
+
     const filteredAndSortedCompanies = useMemo(() => {
         // First, filter by search term
         let filteredItems = insuranceCompanyContacts.filter(company => {
@@ -196,7 +196,7 @@ const InsuranceCompanies: React.FC<InsuranceCompaniesProps> = ({ ldrState }) => 
         setEditingCompany(null);
         setIsModalOpen(false);
     };
-    
+
     const handleSubmit = (companyData: Omit<InsuranceCompanyContact, 'id'>) => {
         if (editingCompany) {
             updateInsuranceCompanyContact({ ...editingCompany, ...companyData });
@@ -208,7 +208,12 @@ const InsuranceCompanies: React.FC<InsuranceCompaniesProps> = ({ ldrState }) => 
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-text-primary">Seguradoras</h1>
+            <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold text-text-primary">Seguradoras</h1>
+                <Button onClick={() => handleOpenModal()} className="whitespace-nowrap">
+                    + Nova Seguradora
+                </Button>
+            </div>
             <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                     {/* Search Bar */}
@@ -232,7 +237,7 @@ const InsuranceCompanies: React.FC<InsuranceCompaniesProps> = ({ ldrState }) => 
                             </button>
                         )}
                     </div>
-                    
+
                     <Button onClick={() => handleOpenModal()} className="whitespace-nowrap">
                         + Nova Seguradora
                     </Button>
@@ -243,7 +248,7 @@ const InsuranceCompanies: React.FC<InsuranceCompaniesProps> = ({ ldrState }) => 
                         Mostrando {filteredAndSortedCompanies.length} de {insuranceCompanyContacts.length} seguradoras
                     </p>
                 )}
-                
+
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-ui-card">
                         <thead className="bg-ui-card">

@@ -83,7 +83,6 @@ const Dashboard: React.FC<DashboardProps> = ({ ldrState }) => {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-text-primary">Dashboard</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard title="Total de Clientes" value={clients.length} description="Clientes ativos na base" />
                 <StatCard title="Apólices Ativas" value={policies.filter(p => p.status === PolicyStatus.Active).length} description="Contratos vigentes" />

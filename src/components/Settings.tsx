@@ -419,56 +419,55 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-text-primary">Configurações do Sistema</h1>
+            <Accordion type="single" collapsible className="space-y-4">
+                {isAdmin && (
+                    <>
+                        <AccordionSection title="Gerenciamento de Usuários (Autenticação)" isOpen={openAccordion === 'auth-users'} onToggle={() => toggleAccordion('auth-users')}>
+                            <UserManagement />
+                        </AccordionSection>
 
-            {isAdmin && (
-                <>
-                    <AccordionSection title="Gerenciamento de Usuários (Autenticação)" isOpen={openAccordion === 'auth-users'} onToggle={() => toggleAccordion('auth-users')}>
-                        <UserManagement />
-                    </AccordionSection>
+                        <AccordionSection title="Gerenciamento de Equipe" isOpen={openAccordion === 'users'} onToggle={() => toggleAccordion('users')}>
+                            <TeamManagement ldrState={ldrState} />
+                        </AccordionSection>
+                    </>
+                )}
 
-                    <AccordionSection title="Gerenciamento de Equipe" isOpen={openAccordion === 'users'} onToggle={() => toggleAccordion('users')}>
-                        <TeamManagement ldrState={ldrState} />
-                    </AccordionSection>
-                </>
-            )}
-
-            <AccordionSection title="Configuração de Listas" isOpen={openAccordion === 'lists'} onToggle={() => toggleAccordion('lists')}>
-                <div className="space-y-8">
-                    <ListManagement title="Tipos de Apólice" items={policyTypes} onAdd={addPolicyType} onDelete={deletePolicyType} placeholder="Novo tipo de apólice" />
-                    <ListManagement title="Origens da Oportunidade" items={origins} onAdd={addOrigin} onDelete={deleteOrigin} placeholder="Nova origem" />
-                </div>
-            </AccordionSection>
-
-            <AccordionSection title="Funis e Estágios" isOpen={openAccordion === 'funnel-config'} onToggle={() => toggleAccordion('funnel-config')}>
-                <FunnelConfigurationComponent ldrState={ldrState} />
-            </AccordionSection>
-
-            <AccordionSection title="Atividades dos Funis" isOpen={openAccordion === 'funnel-templates'} onToggle={() => toggleAccordion('funnel-templates')}>
-                <FunnelTemplates ldrState={ldrState} />
-            </AccordionSection>
-
-            {isAdmin && (
-                <>
-                    <AccordionSection title="Cargos" isOpen={openAccordion === 'job-roles'} onToggle={() => toggleAccordion('job-roles')}>
-                        <JobRoles />
-                    </AccordionSection>
-
-                    <AccordionSection title="Atividades Padrão" isOpen={openAccordion === 'activity-templates'} onToggle={() => toggleAccordion('activity-templates')}>
-                        <ActivityTemplates />
-                    </AccordionSection>
-                </>
-            )}
-
-            <AccordionSection title="Alertas e Moeda" isOpen={openAccordion === 'alerts'} onToggle={() => toggleAccordion('alerts')}>
-                <AlertSettings ldrState={ldrState} />
-            </AccordionSection>
-
-            {isAdmin && (
-                <AccordionSection title="Importar Apólices (CSV)" isOpen={openAccordion === 'import-csv'} onToggle={() => toggleAccordion('import-csv')}>
-                    <ImportCSV />
+                <AccordionSection title="Configuração de Listas" isOpen={openAccordion === 'lists'} onToggle={() => toggleAccordion('lists')}>
+                    <div className="space-y-8">
+                        <ListManagement title="Tipos de Apólice" items={policyTypes} onAdd={addPolicyType} onDelete={deletePolicyType} placeholder="Novo tipo de apólice" />
+                        <ListManagement title="Origens da Oportunidade" items={origins} onAdd={addOrigin} onDelete={deleteOrigin} placeholder="Nova origem" />
+                    </div>
                 </AccordionSection>
-            )}
+
+                <AccordionSection title="Funis e Estágios" isOpen={openAccordion === 'funnel-config'} onToggle={() => toggleAccordion('funnel-config')}>
+                    <FunnelConfigurationComponent ldrState={ldrState} />
+                </AccordionSection>
+
+                <AccordionSection title="Atividades dos Funis" isOpen={openAccordion === 'funnel-templates'} onToggle={() => toggleAccordion('funnel-templates')}>
+                    <FunnelTemplates ldrState={ldrState} />
+                </AccordionSection>
+
+                {isAdmin && (
+                    <>
+                        <AccordionSection title="Cargos" isOpen={openAccordion === 'job-roles'} onToggle={() => toggleAccordion('job-roles')}>
+                            <JobRoles />
+                        </AccordionSection>
+
+                        <AccordionSection title="Atividades Padrão" isOpen={openAccordion === 'activity-templates'} onToggle={() => toggleAccordion('activity-templates')}>
+                            <ActivityTemplates />
+                        </AccordionSection>
+                    </>
+                )}
+
+                <AccordionSection title="Alertas e Moeda" isOpen={openAccordion === 'alerts'} onToggle={() => toggleAccordion('alerts')}>
+                    <AlertSettings ldrState={ldrState} />
+                </AccordionSection>
+
+                {isAdmin && (
+                    <AccordionSection title="Importar Apólices (CSV)" isOpen={openAccordion === 'import-csv'} onToggle={() => toggleAccordion('import-csv')}>
+                        <ImportCSV />
+                    </AccordionSection>
+                )}
         </div>
     );
 };

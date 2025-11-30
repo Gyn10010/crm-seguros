@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ImportCSV } from './ImportCSV';
 
 interface PolicyListProps {
-  ldrState: LDRState;
+    ldrState: LDRState;
 }
 
 const getStatusClass = (status: PolicyStatus) => {
@@ -37,14 +37,14 @@ const PolicyModal: React.FC<{
 }> = ({ isOpen, onClose, onSubmit, policy, clients, ldrState }) => {
     const { policyTypes, insuranceCompanyContacts, systemSettings } = ldrState;
     const initialFormState: Omit<Policy, 'id'> = {
-        clientId: '', 
-        policyNumber: '', 
-        insuranceCompany: insuranceCompanyContacts[0]?.name || '', 
-        type: policyTypes[0] || '', 
-        premium: 0, 
-        commission: 15, 
-        startDate: '', 
-        endDate: '', 
+        clientId: '',
+        policyNumber: '',
+        insuranceCompany: insuranceCompanyContacts[0]?.name || '',
+        type: policyTypes[0] || '',
+        premium: 0,
+        commission: 15,
+        startDate: '',
+        endDate: '',
         status: PolicyStatus.Pending,
         documentType: '',
         netPremium: 0,
@@ -108,9 +108,9 @@ const PolicyModal: React.FC<{
         e.preventDefault();
         onSubmit(formData);
     };
-    
+
     return (
-         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-ui-card p-8 rounded-lg border border-ui-border w-full max-w-4xl max-h-[90vh] overflow-y-auto relative shadow-2xl">
                 <h2 className="text-2xl font-bold text-text-primary mb-6">{policy ? 'Editar Apólice' : 'Nova Apólice'}</h2>
                 <button type="button" onClick={onClose} className="absolute top-4 right-4 text-text-secondary hover:text-text-primary transition-colors" aria-label="Fechar">
@@ -140,11 +140,11 @@ const PolicyModal: React.FC<{
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="startDate" className="block text-sm font-medium text-text-secondary mb-1">Vigência Inicial</label>
-                            <input type="date" name="startDate" id="startDate" value={formData.startDate} onChange={handleChange} required={isFieldRequired('startDate')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="date" name="startDate" id="startDate" value={formData.startDate} onChange={handleChange} required={isFieldRequired('startDate')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="endDate" className="block text-sm font-medium text-text-secondary mb-1">Vigência Final</label>
-                            <input type="date" name="endDate" id="endDate" value={formData.endDate} onChange={handleChange} required={isFieldRequired('endDate')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="date" name="endDate" id="endDate" value={formData.endDate} onChange={handleChange} required={isFieldRequired('endDate')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
@@ -152,26 +152,26 @@ const PolicyModal: React.FC<{
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label htmlFor="netPremium" className="block text-sm font-medium text-text-secondary mb-1">Prêmio Líquido ({systemSettings.currency})</label>
-                            <input type="number" step="0.01" name="netPremium" id="netPremium" value={formData.netPremium} onChange={handleChange} required={isFieldRequired('netPremium')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="number" step="0.01" name="netPremium" id="netPremium" value={formData.netPremium} onChange={handleChange} required={isFieldRequired('netPremium')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="premium" className="block text-sm font-medium text-text-secondary mb-1">Prêmio Total ({systemSettings.currency})</label>
-                            <input type="number" step="0.01" name="premium" id="premium" value={formData.premium} onChange={handleChange} required={isFieldRequired('premium')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="number" step="0.01" name="premium" id="premium" value={formData.premium} onChange={handleChange} required={isFieldRequired('premium')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="commission" className="block text-sm font-medium text-text-secondary mb-1">Comissão (%)</label>
-                            <input type="number" step="1" name="commission" id="commission" value={formData.commission} onChange={handleChange} required={isFieldRequired('commission')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="number" step="1" name="commission" id="commission" value={formData.commission} onChange={handleChange} required={isFieldRequired('commission')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="generatedCommission" className="block text-sm font-medium text-text-secondary mb-1">Comissão Gerada ({systemSettings.currency})</label>
-                            <input type="number" step="0.01" name="generatedCommission" id="generatedCommission" value={formData.generatedCommission} onChange={handleChange} required={isFieldRequired('generatedCommission')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="number" step="0.01" name="generatedCommission" id="generatedCommission" value={formData.generatedCommission} onChange={handleChange} required={isFieldRequired('generatedCommission')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="sellerTransfer" className="block text-sm font-medium text-text-secondary mb-1">Repasse Vendedor ({systemSettings.currency})</label>
-                            <input type="number" step="0.01" name="sellerTransfer" id="sellerTransfer" value={formData.sellerTransfer} onChange={handleChange} required={isFieldRequired('sellerTransfer')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="number" step="0.01" name="sellerTransfer" id="sellerTransfer" value={formData.sellerTransfer} onChange={handleChange} required={isFieldRequired('sellerTransfer')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
@@ -179,11 +179,11 @@ const PolicyModal: React.FC<{
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="installments" className="block text-sm font-medium text-text-secondary mb-1">Quantidade Parcelas</label>
-                            <input type="number" name="installments" id="installments" value={formData.installments} onChange={handleChange} required={isFieldRequired('installments')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="number" name="installments" id="installments" value={formData.installments} onChange={handleChange} required={isFieldRequired('installments')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="paymentType" className="block text-sm font-medium text-text-secondary mb-1">Tipo Pagamento</label>
-                            <input type="text" name="paymentType" id="paymentType" value={formData.paymentType} onChange={handleChange} required={isFieldRequired('paymentType')} placeholder="Ex: Cartão, Boleto, PIX" className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="paymentType" id="paymentType" value={formData.paymentType} onChange={handleChange} required={isFieldRequired('paymentType')} placeholder="Ex: Cartão, Boleto, PIX" className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
@@ -197,18 +197,18 @@ const PolicyModal: React.FC<{
                         </div>
                         <div>
                             <label htmlFor="branch" className="block text-sm font-medium text-text-secondary mb-1">Ramo</label>
-                            <input type="text" name="branch" id="branch" value={formData.branch} onChange={handleChange} required={isFieldRequired('branch')} placeholder="Ex: Auto, Vida, Patrimonial" className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="branch" id="branch" value={formData.branch} onChange={handleChange} required={isFieldRequired('branch')} placeholder="Ex: Auto, Vida, Patrimonial" className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="product" className="block text-sm font-medium text-text-secondary mb-1">Produto</label>
-                            <input type="text" name="product" id="product" value={formData.product} onChange={handleChange} required={isFieldRequired('product')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="product" id="product" value={formData.product} onChange={handleChange} required={isFieldRequired('product')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="item" className="block text-sm font-medium text-text-secondary mb-1">Item</label>
-                            <input type="text" name="item" id="item" value={formData.item} onChange={handleChange} required={isFieldRequired('item')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="item" id="item" value={formData.item} onChange={handleChange} required={isFieldRequired('item')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
@@ -216,22 +216,22 @@ const PolicyModal: React.FC<{
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="proposal" className="block text-sm font-medium text-text-secondary mb-1">Proposta</label>
-                            <input type="text" name="proposal" id="proposal" value={formData.proposal} onChange={handleChange} required={isFieldRequired('proposal')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="proposal" id="proposal" value={formData.proposal} onChange={handleChange} required={isFieldRequired('proposal')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="policyNumber" className="block text-sm font-medium text-text-secondary mb-1">Nº da Apólice</label>
-                            <input type="text" name="policyNumber" id="policyNumber" value={formData.policyNumber} onChange={handleChange} required={isFieldRequired('policyNumber')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="policyNumber" id="policyNumber" value={formData.policyNumber} onChange={handleChange} required={isFieldRequired('policyNumber')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label htmlFor="endorsementProposal" className="block text-sm font-medium text-text-secondary mb-1">Proposta Endosso</label>
-                            <input type="text" name="endorsementProposal" id="endorsementProposal" value={formData.endorsementProposal} onChange={handleChange} required={isFieldRequired('endorsementProposal')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="endorsementProposal" id="endorsementProposal" value={formData.endorsementProposal} onChange={handleChange} required={isFieldRequired('endorsementProposal')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                         <div>
                             <label htmlFor="endorsement" className="block text-sm font-medium text-text-secondary mb-1">Endosso</label>
-                            <input type="text" name="endorsement" id="endorsement" value={formData.endorsement} onChange={handleChange} required={isFieldRequired('endorsement')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"/>
+                            <input type="text" name="endorsement" id="endorsement" value={formData.endorsement} onChange={handleChange} required={isFieldRequired('endorsement')} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary" />
                         </div>
                     </div>
 
@@ -304,7 +304,7 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
             ...p,
             clientName: clients.find(c => c.id === p.clientId)?.name || ''
         }));
-        
+
         if (sortConfig !== null) {
             sortableItems.sort((a, b) => {
                 const keyA = a[sortConfig.key as keyof typeof a];
@@ -334,7 +334,7 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
         if (sortConfig.direction === 'ascending') return <ArrowUpIcon className="inline ml-1 h-3 w-3" />;
         return <ArrowDownIcon className="inline ml-1 h-3 w-3" />;
     };
-    
+
     const handleOpenModal = (policy: Policy | null = null) => {
         setEditingPolicy(policy);
         setIsModalOpen(true);
@@ -357,7 +357,6 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-text-primary">Gestão de Apólices</h1>
                 <Button onClick={() => setShowFieldConfig(true)} variant="outline" className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
                     Configurar Campos
@@ -402,7 +401,7 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
                     </div>
                     <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                         <div className="flex justify-between items-center mb-4 gap-4 flex-wrap">
-                             <div className="flex gap-4 flex-grow">
+                            <div className="flex gap-4 flex-grow">
                                 <input
                                     type="text"
                                     placeholder="Buscar por cliente ou apólice..."
@@ -411,19 +410,19 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
                                     className="w-full md:w-2/5 p-2 bg-white border border-ui-border rounded-md text-text-primary placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary"
                                 />
                                 <select
-                                  value={filterType}
-                                  onChange={(e) => setFilterType(e.target.value as PolicyType | 'all')}
-                                  className="w-full md:w-1/5 p-2 border border-ui-border bg-white rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                                    value={filterType}
+                                    onChange={(e) => setFilterType(e.target.value as PolicyType | 'all')}
+                                    className="w-full md:w-1/5 p-2 border border-ui-border bg-white rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
                                 >
-                                  <option value="all">Todos os Tipos</option>
-                                  {policyTypes.map(type => (
-                                    <option key={type} value={type}>{type}</option>
-                                  ))}
+                                    <option value="all">Todos os Tipos</option>
+                                    {policyTypes.map(type => (
+                                        <option key={type} value={type}>{type}</option>
+                                    ))}
                                 </select>
                             </div>
-                             <Button onClick={() => handleOpenModal()} className="font-bold">
+                            <Button onClick={() => handleOpenModal()} className="font-bold">
                                 + Nova Apólice
-                             </Button>
+                            </Button>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="min-w-full bg-ui-card">
@@ -466,7 +465,7 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
                                                 </span>
                                             </td>
                                             <td className="py-4 px-4 whitespace-nowrap text-sm">
-                                                 <div className="flex items-center gap-4">
+                                                <div className="flex items-center gap-4">
                                                     <button onClick={() => handleOpenModal(policy)} className="text-text-secondary hover:text-brand-primary transition-colors"><EditIcon /></button>
                                                     <button onClick={() => deletePolicy(policy.id)} className="text-text-secondary hover:text-danger transition-colors"><TrashIcon /></button>
                                                 </div>
@@ -476,7 +475,7 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
                                 </tbody>
                             </table>
                         </div>
-                         {sortedPolicies.length === 0 && (
+                        {sortedPolicies.length === 0 && (
                             <p className="text-center text-text-muted mt-6">Nenhuma apólice encontrada.</p>
                         )}
                         <PolicyModal

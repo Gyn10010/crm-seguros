@@ -163,7 +163,19 @@ function AppContent() {
         onLogoutRequest={() => setIsLogoutModalOpen(true)}
         currentUser={currentUser}
         companyName={ldrState.systemSettings.companyName}
-        pageTitle={currentPage === Page.SalesFunnel ? 'Funil de Vendas' : undefined}
+        pageTitle={(() => {
+          switch (currentPage) {
+            case Page.Dashboard: return 'Dashboard';
+            case Page.Clients: return 'Clientes';
+            case Page.Policies: return 'Apólices';
+            case Page.InsuranceCompanies: return 'Seguradoras';
+            case Page.Tasks: return 'Tarefas';
+            case Page.Renewals: return 'Renovações';
+            case Page.SalesFunnel: return 'Funil de Vendas';
+            case Page.Settings: return 'Configurações';
+            default: return undefined;
+          }
+        })()}
       />
       <main className={`flex-1 ${currentPage === Page.SalesFunnel ? 'flex flex-col overflow-hidden' : 'p-6'}`}>
         <div className={currentPage === Page.SalesFunnel ? 'flex-1 flex flex-col overflow-hidden' : 'max-w-[1400px] mx-auto'}>

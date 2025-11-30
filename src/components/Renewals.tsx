@@ -4,7 +4,7 @@ import { Renewal, RenewalStatus } from '../types/index';
 import { CloseIcon, ArrowUpIcon, ArrowDownIcon } from './icons/Icons';
 
 interface RenewalsProps {
-  ldrState: LDRState;
+    ldrState: LDRState;
 }
 
 const getStatusClass = (status: RenewalStatus) => {
@@ -24,12 +24,12 @@ const getStatusClass = (status: RenewalStatus) => {
 
 const Renewals: React.FC<RenewalsProps> = ({ ldrState }) => {
     const { renewals, clients, policies, users, updateRenewal } = ldrState;
-    
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRenewal, setSelectedRenewal] = useState<Renewal | null>(null);
     const [formData, setFormData] = useState<Partial<Renewal>>({});
     const formRef = useRef<HTMLFormElement>(null);
-    
+
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [filters, setFilters] = useState({ searchTerm: '', status: 'all', salesperson: 'all' });
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: string } | null>({ key: 'endDate', direction: 'ascending' });
@@ -47,7 +47,7 @@ const Renewals: React.FC<RenewalsProps> = ({ ldrState }) => {
                 endDate: policy?.endDate || 'N/A',
             };
         });
-        
+
         processedRenewals = processedRenewals.filter(r => {
             const searchTermMatch = !filters.searchTerm ||
                 r.clientName.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
@@ -121,11 +121,11 @@ const Renewals: React.FC<RenewalsProps> = ({ ldrState }) => {
         }
         handleCloseModal();
     };
-    
-    const FilterModal: React.FC<{isOpen: boolean, onClose: () => void, onApply: (f: typeof filters) => void, currentFilters: typeof filters}> = ({isOpen, onClose, onApply, currentFilters}) => {
+
+    const FilterModal: React.FC<{ isOpen: boolean, onClose: () => void, onApply: (f: typeof filters) => void, currentFilters: typeof filters }> = ({ isOpen, onClose, onApply, currentFilters }) => {
         const [localFilters, setLocalFilters] = useState(currentFilters);
         if (!isOpen) return null;
-        
+
         const handleApply = () => {
             onApply(localFilters);
             onClose();
@@ -139,18 +139,18 @@ const Renewals: React.FC<RenewalsProps> = ({ ldrState }) => {
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="searchTerm" className="block text-sm font-medium text-text-secondary mb-1">Buscar por Cliente ou Apólice</label>
-                            <input type="text" id="searchTerm" value={localFilters.searchTerm} onChange={e => setLocalFilters(f => ({...f, searchTerm: e.target.value}))} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary"/>
+                            <input type="text" id="searchTerm" value={localFilters.searchTerm} onChange={e => setLocalFilters(f => ({ ...f, searchTerm: e.target.value }))} className="mt-1 block w-full px-3 py-2 bg-white border border-ui-border rounded-md shadow-sm text-text-primary" />
                         </div>
                         <div>
                             <label htmlFor="status" className="block text-sm font-medium text-text-secondary mb-1">Status</label>
-                            <select id="status" value={localFilters.status} onChange={e => setLocalFilters(f => ({...f, status: e.target.value}))} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary">
+                            <select id="status" value={localFilters.status} onChange={e => setLocalFilters(f => ({ ...f, status: e.target.value }))} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary">
                                 <option value="all">Todos</option>
                                 {Object.values(RenewalStatus).map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
                         <div>
                             <label htmlFor="salesperson" className="block text-sm font-medium text-text-secondary mb-1">Vendedor</label>
-                            <select id="salesperson" value={localFilters.salesperson} onChange={e => setLocalFilters(f => ({...f, salesperson: e.target.value}))} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary">
+                            <select id="salesperson" value={localFilters.salesperson} onChange={e => setLocalFilters(f => ({ ...f, salesperson: e.target.value }))} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary">
                                 <option value="all">Todos</option>
                                 {salespeople.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
@@ -167,110 +167,109 @@ const Renewals: React.FC<RenewalsProps> = ({ ldrState }) => {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-text-primary">Renovações de Apólices</h1>
             <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                 <div className="flex justify-start mb-4">
-                <button 
-                    onClick={() => setIsFilterModalOpen(true)} 
-                    className="bg-ui-card hover:bg-ui-hover border border-ui-border text-text-secondary font-bold py-2 px-4 rounded-lg transition-colors"
-                >
-                    Filtros
-                </button>
-            </div>
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-ui-card">
-                    <thead className="bg-ui-card">
-                        <tr>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                                <button onClick={() => requestSort('clientName')} className="w-full text-left">Cliente {getSortIcon('clientName')}</button>
-                            </th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Apólice</th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                                <button onClick={() => requestSort('endDate')} className="w-full text-left">Vencimento {getSortIcon('endDate')}</button>
-                            </th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                                <button onClick={() => requestSort('status')} className="w-full text-left">Status {getSortIcon('status')}</button>
-                            </th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                                <button onClick={() => requestSort('salesperson')} className="w-full text-left">Vendedor {getSortIcon('salesperson')}</button>
-                            </th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
-                                <button onClick={() => requestSort('nextContactDate')} className="w-full text-left">Próximo Contato {getSortIcon('nextContactDate')}</button>
-                            </th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-ui-border">
-                        {filteredAndSortedRenewals.map(renewal => {
-                            return (
-                                <tr key={renewal.policyId} className="hover:bg-ui-hover">
-                                    <td className="py-4 px-4 whitespace-nowrap text-sm font-medium text-text-primary">{renewal.clientName}</td>
-                                    <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{renewal.policyNumber}</td>
-                                    <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{new Date(renewal.endDate).toLocaleDateString('pt-BR')}</td>
-                                    <td className="py-4 px-4 whitespace-nowrap text-sm">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(renewal.status)}`}>
-                                            {renewal.status}
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{renewal.salesperson}</td>
-                                    <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">
-                                        {renewal.nextContactDate ? new Date(renewal.nextContactDate.replace(/-/g, '\/')).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}
-                                    </td>
-                                    <td className="py-4 px-4 whitespace-nowrap text-sm">
-                                        <button onClick={() => handleManageClick(renewal)} className="text-brand-primary hover:underline font-semibold">Gerenciar</button>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-            {filteredAndSortedRenewals.length === 0 && (
-                <p className="text-center text-text-muted mt-6">Nenhuma renovação encontrada com os filtros selecionados.</p>
-            )}
-
-            <FilterModal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} onApply={setFilters} currentFilters={filters} />
-
-            {isModalOpen && selectedRenewal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-ui-card p-8 rounded-lg border border-ui-border w-full max-w-lg max-h-[90vh] overflow-y-auto relative shadow-2xl">
-                        <h2 className="text-2xl font-bold text-text-primary mb-6">Gerenciar Renovação</h2>
-                        <button type="button" onClick={handleCloseModal} className="absolute top-4 right-4 text-text-secondary hover:text-text-primary transition-colors" aria-label="Fechar">
-                            <CloseIcon />
-                        </button>
-                        <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
-                             <div>
-                                <label htmlFor="status" className="block text-sm font-medium text-text-secondary mb-1">Status da Renovação</label>
-                                <select name="status" id="status" value={formData.status} onChange={handleFormChange} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                                    {Object.values(RenewalStatus).map(s => <option key={s} value={s}>{s}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="salesperson" className="block text-sm font-medium text-text-secondary mb-1">Vendedor Responsável</label>
-                                <select name="salesperson" id="salesperson" value={formData.salesperson} onChange={handleFormChange} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                                    {salespeople.map(person => <option key={person} value={person}>{person}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="nextContactDate" className="block text-sm font-medium text-text-secondary mb-1">Próximo Contato</label>
-                                <input type="date" name="nextContactDate" id="nextContactDate" value={formData.nextContactDate || ''} onChange={handleFormChange} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary" />
-                            </div>
-                            <div>
-                                <label htmlFor="notes" className="block text-sm font-medium text-text-secondary mb-1">Observações</label>
-                                <textarea name="notes" id="notes" value={formData.notes || ''} onChange={handleFormChange} rows={5} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"></textarea>
-                            </div>
-                            <div className="flex justify-end gap-4 pt-4 mt-6 border-t border-ui-border">
-                                <button type="button" onClick={handleCloseModal} className="px-4 py-2 bg-ui-card text-text-secondary border border-ui-border rounded-md hover:bg-ui-hover">Cancelar</button>
-                                <button type="submit" className="px-4 py-2 bg-brand-primary text-white font-semibold rounded-md hover:bg-brand-primary/90">
-                                    Salvar Alterações
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                    <button
+                        onClick={() => setIsFilterModalOpen(true)}
+                        className="bg-ui-card hover:bg-ui-hover border border-ui-border text-text-secondary font-bold py-2 px-4 rounded-lg transition-colors"
+                    >
+                        Filtros
+                    </button>
                 </div>
-            )}
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-ui-card">
+                        <thead className="bg-ui-card">
+                            <tr>
+                                <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                    <button onClick={() => requestSort('clientName')} className="w-full text-left">Cliente {getSortIcon('clientName')}</button>
+                                </th>
+                                <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Apólice</th>
+                                <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                    <button onClick={() => requestSort('endDate')} className="w-full text-left">Vencimento {getSortIcon('endDate')}</button>
+                                </th>
+                                <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                    <button onClick={() => requestSort('status')} className="w-full text-left">Status {getSortIcon('status')}</button>
+                                </th>
+                                <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                    <button onClick={() => requestSort('salesperson')} className="w-full text-left">Vendedor {getSortIcon('salesperson')}</button>
+                                </th>
+                                <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
+                                    <button onClick={() => requestSort('nextContactDate')} className="w-full text-left">Próximo Contato {getSortIcon('nextContactDate')}</button>
+                                </th>
+                                <th className="py-3 px-4 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-ui-border">
+                            {filteredAndSortedRenewals.map(renewal => {
+                                return (
+                                    <tr key={renewal.policyId} className="hover:bg-ui-hover">
+                                        <td className="py-4 px-4 whitespace-nowrap text-sm font-medium text-text-primary">{renewal.clientName}</td>
+                                        <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{renewal.policyNumber}</td>
+                                        <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{new Date(renewal.endDate).toLocaleDateString('pt-BR')}</td>
+                                        <td className="py-4 px-4 whitespace-nowrap text-sm">
+                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(renewal.status)}`}>
+                                                {renewal.status}
+                                            </span>
+                                        </td>
+                                        <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{renewal.salesperson}</td>
+                                        <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">
+                                            {renewal.nextContactDate ? new Date(renewal.nextContactDate.replace(/-/g, '\/')).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'N/A'}
+                                        </td>
+                                        <td className="py-4 px-4 whitespace-nowrap text-sm">
+                                            <button onClick={() => handleManageClick(renewal)} className="text-brand-primary hover:underline font-semibold">Gerenciar</button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+                {filteredAndSortedRenewals.length === 0 && (
+                    <p className="text-center text-text-muted mt-6">Nenhuma renovação encontrada com os filtros selecionados.</p>
+                )}
+
+                <FilterModal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} onApply={setFilters} currentFilters={filters} />
+
+                {isModalOpen && selectedRenewal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-ui-card p-8 rounded-lg border border-ui-border w-full max-w-lg max-h-[90vh] overflow-y-auto relative shadow-2xl">
+                            <h2 className="text-2xl font-bold text-text-primary mb-6">Gerenciar Renovação</h2>
+                            <button type="button" onClick={handleCloseModal} className="absolute top-4 right-4 text-text-secondary hover:text-text-primary transition-colors" aria-label="Fechar">
+                                <CloseIcon />
+                            </button>
+                            <form ref={formRef} onSubmit={handleFormSubmit} className="space-y-4">
+                                <div>
+                                    <label htmlFor="status" className="block text-sm font-medium text-text-secondary mb-1">Status da Renovação</label>
+                                    <select name="status" id="status" value={formData.status} onChange={handleFormChange} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                        {Object.values(RenewalStatus).map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="salesperson" className="block text-sm font-medium text-text-secondary mb-1">Vendedor Responsável</label>
+                                    <select name="salesperson" id="salesperson" value={formData.salesperson} onChange={handleFormChange} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                                        {salespeople.map(person => <option key={person} value={person}>{person}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="nextContactDate" className="block text-sm font-medium text-text-secondary mb-1">Próximo Contato</label>
+                                    <input type="date" name="nextContactDate" id="nextContactDate" value={formData.nextContactDate || ''} onChange={handleFormChange} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary" />
+                                </div>
+                                <div>
+                                    <label htmlFor="notes" className="block text-sm font-medium text-text-secondary mb-1">Observações</label>
+                                    <textarea name="notes" id="notes" value={formData.notes || ''} onChange={handleFormChange} rows={5} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"></textarea>
+                                </div>
+                                <div className="flex justify-end gap-4 pt-4 mt-6 border-t border-ui-border">
+                                    <button type="button" onClick={handleCloseModal} className="px-4 py-2 bg-ui-card text-text-secondary border border-ui-border rounded-md hover:bg-ui-hover">Cancelar</button>
+                                    <button type="submit" className="px-4 py-2 bg-brand-primary text-white font-semibold rounded-md hover:bg-brand-primary/90">
+                                        Salvar Alterações
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
-    </div>
     );
 };
 
