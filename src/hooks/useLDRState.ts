@@ -1197,6 +1197,21 @@ const useLDRState = (): LDRState => {
     }
   }, []);
 
+  const deleteOpportunity = useCallback(async (opportunityId: string) => {
+    const { error } = await supabase
+      .from('opportunities')
+      .delete()
+      .eq('id', opportunityId);
+
+    if (!error) {
+      setOpportunities(prev => prev.filter(o => o.id !== opportunityId));
+      toast.success('Oportunidade excluída com sucesso!');
+    } else {
+      console.error('Error deleting opportunity:', error);
+      toast.error('Erro ao excluir oportunidade');
+    }
+  }, []);
+
   const updateOpportunityStage = useCallback(async (opportunityId: string, newStage: string) => {
     const { error } = await supabase
       .from('opportunities')
@@ -1346,137 +1361,300 @@ const useLDRState = (): LDRState => {
   }, []);
 
   // Funnel Configuration Management
-  const addFunnelConfiguration = useCallback((funnelName: string) => {
-    const maxOrder = funnelConfigurations.length > 0
-      ? Math.max(...funnelConfigurations.map(f => f.orderIndex))
-      : -1;
-
-    const funnelKey = funnelName.toLowerCase().replace(/\s+/g, '_');
-    const newFunnel: FunnelConfiguration = {
-      id: `fc-${Date.now()}`,
-      funnelName,
-      funnelKey,
-      isActive: true,
-      orderIndex: maxOrder + 1,
-    };
-    setFunnelConfigurations(prev => [...prev, newFunnel]);
-  }, [funnelConfigurations]);
-
-  const updateFunnelConfiguration = useCallback((updatedFunnel: FunnelConfiguration) => {
-    setFunnelConfigurations(prev =>
-      prev.map(f => f.id === updatedFunnel.id ? updatedFunnel : f)
-    );
-  }, []);
-
-  const deleteFunnelConfiguration = useCallback((funnelId: string) => {
-    const funnel = funnelConfigurations.find(f => f.id === funnelId);
-    if (!funnel) return;
-
-    // Delete related stages and templates
-    setFunnelStages(prev => prev.filter(s => s.funnelKey !== funnel.funnelKey));
-    setFunnelActivityTemplates(prev => prev.filter(t => t.funnelType !== funnel.funnelKey));
-
-    setFunnelConfigurations(prev => {
-      const filtered = prev.filter(f => f.id !== funnelId);
-      return filtered.map((f, idx) => ({ ...f, orderIndex: idx }));
-    });
-  }, [funnelConfigurations]);
-
-  const moveFunnelConfiguration = useCallback((funnelId: string, direction: 'up' | 'down') => {
-    setFunnelConfigurations(prev => {
-      const sorted = [...prev].sort((a, b) => a.orderIndex - b.orderIndex);
-      const currentIndex = sorted.findIndex(f => f.id === funnelId);
-
-      if (
-        (direction === 'up' && currentIndex === 0) ||
-        (direction === 'down' && currentIndex === sorted.length - 1)
-      ) {
-        return prev;
+  const addFunnelConfiguration = useCallback(async (funnelName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Usuário não autenticado');
+        return;
       }
 
-      const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-      const current = sorted[currentIndex];
-      const swapWith = sorted[swapIndex];
+      const maxOrder = funnelConfigurations.length > 0
+        ? Math.max(...funnelConfigurations.map(f => f.orderIndex))
+        : -1;
 
-      return prev.map(f => {
-        if (f.id === current.id) return { ...f, orderIndex: swapWith.orderIndex };
-        if (f.id === swapWith.id) return { ...f, orderIndex: current.orderIndex };
-        return f;
-      });
-    });
+      const funnelKey = funnelName.toLowerCase().replace(/\s+/g, '_');
+      const newFunnel = {
+        funnel_name: funnelName,
+        funnel_key: funnelKey,
+        is_active: true,
+        order_index: maxOrder + 1,
+        user_id: user.id
+      };
+
+      const { data, error } = await supabase
+        .from('funnel_configurations')
+        .insert(newFunnel)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setFunnelConfigurations(prev => [...prev, {
+          id: data.id,
+          funnelName: data.funnel_name,
+          funnelKey: data.funnel_key,
+          isActive: data.is_active,
+          orderIndex: data.order_index,
+        }]);
+        toast.success('Funil criado com sucesso!');
+      }
+    } catch (error) {
+      console.error('Error adding funnel:', error);
+      toast.error('Erro ao criar funil');
+    }
+  }, [funnelConfigurations]);
+
+  const updateFunnelConfiguration = useCallback(async (updatedFunnel: FunnelConfiguration) => {
+    try {
+      const { error } = await supabase
+        .from('funnel_configurations')
+        .update({
+          funnel_name: updatedFunnel.funnelName,
+          is_active: updatedFunnel.isActive,
+          order_index: updatedFunnel.orderIndex
+        })
+        .eq('id', updatedFunnel.id);
+
+      if (error) throw error;
+
+      setFunnelConfigurations(prev =>
+        prev.map(f => f.id === updatedFunnel.id ? updatedFunnel : f)
+      );
+      toast.success('Funil atualizado com sucesso!');
+    } catch (error) {
+      console.error('Error updating funnel:', error);
+      toast.error('Erro ao atualizar funil');
+    }
   }, []);
+
+  const deleteFunnelConfiguration = useCallback(async (funnelId: string) => {
+    try {
+      const funnel = funnelConfigurations.find(f => f.id === funnelId);
+      if (!funnel) return;
+
+      const { error } = await supabase
+        .from('funnel_configurations')
+        .delete()
+        .eq('id', funnelId);
+
+      if (error) throw error;
+
+      // Delete related stages and templates locally (Supabase cascade handles DB)
+      setFunnelStages(prev => prev.filter(s => s.funnelKey !== funnel.funnelKey));
+      setFunnelActivityTemplates(prev => prev.filter(t => t.funnelType !== funnel.funnelKey));
+
+      setFunnelConfigurations(prev => {
+        const filtered = prev.filter(f => f.id !== funnelId);
+        return filtered.map((f, idx) => ({ ...f, orderIndex: idx }));
+      });
+      toast.success('Funil excluído com sucesso!');
+    } catch (error) {
+      console.error('Error deleting funnel:', error);
+      toast.error('Erro ao excluir funil');
+    }
+  }, [funnelConfigurations]);
+
+  const moveFunnelConfiguration = useCallback(async (funnelId: string, direction: 'up' | 'down') => {
+    const sorted = [...funnelConfigurations].sort((a, b) => a.orderIndex - b.orderIndex);
+    const currentIndex = sorted.findIndex(f => f.id === funnelId);
+
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === sorted.length - 1)
+    ) {
+      return;
+    }
+
+    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    const current = sorted[currentIndex];
+    const swapWith = sorted[swapIndex];
+
+    // Optimistic update
+    const newConfigurations = funnelConfigurations.map(f => {
+      if (f.id === current.id) return { ...f, orderIndex: swapWith.orderIndex };
+      if (f.id === swapWith.id) return { ...f, orderIndex: current.orderIndex };
+      return f;
+    });
+
+    setFunnelConfigurations(newConfigurations);
+
+    try {
+      // Update both records in DB
+      const { error: error1 } = await supabase
+        .from('funnel_configurations')
+        .update({ order_index: swapWith.orderIndex })
+        .eq('id', current.id);
+
+      if (error1) throw error1;
+
+      const { error: error2 } = await supabase
+        .from('funnel_configurations')
+        .update({ order_index: current.orderIndex })
+        .eq('id', swapWith.id);
+
+      if (error2) throw error2;
+
+    } catch (error) {
+      console.error('Error moving funnel:', error);
+      toast.error('Erro ao reordenar funis');
+      // Revert on error
+      setFunnelConfigurations(funnelConfigurations);
+    }
+  }, [funnelConfigurations]);
 
   // Funnel Stage Management
-  const addFunnelStage = useCallback((funnelKey: string, stageName: string) => {
-    const existingStages = funnelStages.filter(s => s.funnelKey === funnelKey);
-    const maxOrder = existingStages.length > 0
-      ? Math.max(...existingStages.map(s => s.orderIndex))
-      : -1;
+  const addFunnelStage = useCallback(async (funnelKey: string, stageName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Usuário não autenticado');
+        return;
+      }
 
-    const stageKey = stageName.toLowerCase().replace(/\s+/g, '_');
-    const newStage: FunnelStage = {
-      id: `fs-${Date.now()}`,
-      funnelKey,
-      stageName,
-      stageKey,
-      orderIndex: maxOrder + 1,
-    };
-    setFunnelStages(prev => [...prev, newStage]);
+      const existingStages = funnelStages.filter(s => s.funnelKey === funnelKey);
+      const maxOrder = existingStages.length > 0
+        ? Math.max(...existingStages.map(s => s.orderIndex))
+        : -1;
+
+      const stageKey = stageName.toLowerCase().replace(/\s+/g, '_');
+      const newStage = {
+        funnel_key: funnelKey,
+        stage_name: stageName,
+        stage_key: stageKey,
+        order_index: maxOrder + 1,
+        user_id: user.id
+      };
+
+      const { data, error } = await supabase
+        .from('funnel_stages')
+        .insert(newStage)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setFunnelStages(prev => [...prev, {
+          id: data.id,
+          funnelKey: data.funnel_key,
+          stageName: data.stage_name,
+          stageKey: data.stage_key,
+          orderIndex: data.order_index,
+        }]);
+        toast.success('Estágio adicionado com sucesso!');
+      }
+    } catch (error) {
+      console.error('Error adding stage:', error);
+      toast.error('Erro ao adicionar estágio');
+    }
   }, [funnelStages]);
 
-  const updateFunnelStage = useCallback((updatedStage: FunnelStage) => {
-    setFunnelStages(prev =>
-      prev.map(s => s.id === updatedStage.id ? updatedStage : s)
-    );
+  const updateFunnelStage = useCallback(async (updatedStage: FunnelStage) => {
+    try {
+      const { error } = await supabase
+        .from('funnel_stages')
+        .update({
+          stage_name: updatedStage.stageName,
+          // stage_key usually shouldn't change to avoid breaking references, but if needed:
+          // stage_key: updatedStage.stageKey 
+        })
+        .eq('id', updatedStage.id);
+
+      if (error) throw error;
+
+      setFunnelStages(prev =>
+        prev.map(s => s.id === updatedStage.id ? updatedStage : s)
+      );
+      toast.success('Estágio atualizado com sucesso!');
+    } catch (error) {
+      console.error('Error updating stage:', error);
+      toast.error('Erro ao atualizar estágio');
+    }
   }, []);
 
-  const deleteFunnelStage = useCallback((stageId: string) => {
+  const deleteFunnelStage = useCallback(async (stageId: string) => {
+    try {
+      const stage = funnelStages.find(s => s.id === stageId);
+      if (!stage) return;
+
+      const { error } = await supabase
+        .from('funnel_stages')
+        .delete()
+        .eq('id', stageId);
+
+      if (error) throw error;
+
+      // Delete related templates locally
+      setFunnelActivityTemplates(prev =>
+        prev.filter(t => !(t.funnelType === stage.funnelKey && t.stage === stage.stageKey))
+      );
+
+      setFunnelStages(prev => {
+        const filtered = prev.filter(s => s.id !== stageId);
+        // Reorder remaining stages in the same funnel locally is tricky without DB update, 
+        // but we can just remove it. The order indices might have gaps but that's usually fine.
+        // If we want to reorder in DB, we'd need multiple updates. 
+        // For now, let's just remove from local state.
+        return filtered;
+      });
+      toast.success('Estágio excluído com sucesso!');
+    } catch (error) {
+      console.error('Error deleting stage:', error);
+      toast.error('Erro ao excluir estágio');
+    }
+  }, [funnelStages]);
+
+  const moveFunnelStage = useCallback(async (stageId: string, direction: 'up' | 'down') => {
     const stage = funnelStages.find(s => s.id === stageId);
     if (!stage) return;
 
-    // Delete related templates
-    setFunnelActivityTemplates(prev =>
-      prev.filter(t => !(t.funnelType === stage.funnelKey && t.stage === stage.stageKey))
-    );
+    const sameGroup = funnelStages.filter(s => s.funnelKey === stage.funnelKey)
+      .sort((a, b) => a.orderIndex - b.orderIndex);
 
-    setFunnelStages(prev => {
-      const filtered = prev.filter(s => s.id !== stageId);
-      // Reorder remaining stages in the same funnel
-      return filtered.map(s => {
-        if (s.funnelKey === stage.funnelKey && s.orderIndex > stage.orderIndex) {
-          return { ...s, orderIndex: s.orderIndex - 1 };
-        }
-        return s;
-      });
+    const currentIndex = sameGroup.findIndex(s => s.id === stageId);
+    if (
+      (direction === 'up' && currentIndex === 0) ||
+      (direction === 'down' && currentIndex === sameGroup.length - 1)
+    ) {
+      return;
+    }
+
+    const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    const swapWith = sameGroup[swapIndex];
+
+    // Optimistic update
+    const newStages = funnelStages.map(s => {
+      if (s.id === stage.id) return { ...s, orderIndex: swapWith.orderIndex };
+      if (s.id === swapWith.id) return { ...s, orderIndex: stage.orderIndex };
+      return s;
     });
+
+    setFunnelStages(newStages);
+
+    try {
+      // Update both records in DB
+      const { error: error1 } = await supabase
+        .from('funnel_stages')
+        .update({ order_index: swapWith.orderIndex })
+        .eq('id', stage.id);
+
+      if (error1) throw error1;
+
+      const { error: error2 } = await supabase
+        .from('funnel_stages')
+        .update({ order_index: stage.orderIndex })
+        .eq('id', swapWith.id);
+
+      if (error2) throw error2;
+
+    } catch (error) {
+      console.error('Error moving stage:', error);
+      toast.error('Erro ao reordenar estágios');
+      setFunnelStages(funnelStages); // Revert
+    }
   }, [funnelStages]);
-
-  const moveFunnelStage = useCallback((stageId: string, direction: 'up' | 'down') => {
-    setFunnelStages(prev => {
-      const stage = prev.find(s => s.id === stageId);
-      if (!stage) return prev;
-
-      const sameGroup = prev.filter(s => s.funnelKey === stage.funnelKey)
-        .sort((a, b) => a.orderIndex - b.orderIndex);
-
-      const currentIndex = sameGroup.findIndex(s => s.id === stageId);
-      if (
-        (direction === 'up' && currentIndex === 0) ||
-        (direction === 'down' && currentIndex === sameGroup.length - 1)
-      ) {
-        return prev;
-      }
-
-      const swapIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-      const swapWith = sameGroup[swapIndex];
-
-      return prev.map(s => {
-        if (s.id === stageId) return { ...s, orderIndex: swapWith.orderIndex };
-        if (s.id === swapWith.id) return { ...s, orderIndex: stage.orderIndex };
-        return s;
-      });
-    });
-  }, []);
 
   return {
     clients, policies, tasks, renewals, users, origins, policyTypes, insuranceCompanyContacts,
@@ -1486,7 +1664,7 @@ const useLDRState = (): LDRState => {
     addUser, updateUser, deleteUser, refreshUsers, addOrigin, deleteOrigin,
     updateSystemSettings, addPolicyType, deletePolicyType,
     addInsuranceCompanyContact, updateInsuranceCompanyContact, deleteInsuranceCompanyContact,
-    addOpportunity, updateOpportunity, updateOpportunityStage, addFunnelActivity, updateFunnelActivity,
+    addOpportunity, updateOpportunity, deleteOpportunity, updateOpportunityStage, addFunnelActivity, updateFunnelActivity,
     addFunnelActivityTemplate, updateFunnelActivityTemplate, deleteFunnelActivityTemplate, moveFunnelActivityTemplate,
     addFunnelConfiguration, updateFunnelConfiguration, deleteFunnelConfiguration, moveFunnelConfiguration,
     addFunnelStage, updateFunnelStage, deleteFunnelStage, moveFunnelStage,
