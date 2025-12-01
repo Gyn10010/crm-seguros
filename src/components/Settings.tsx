@@ -224,6 +224,7 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
                 // Just update existing user in local state
                 const updatedUserData = { ...editingUser, ...userFormData };
                 updateUser(updatedUserData);
+                await refreshUsers(); // Refresh to get updated data from localStorage
                 toast.success(`Usuário atualizado! Permissões: ${updatedUserData.permissions.length} selecionadas`);
             } else {
                 // Create new user via edge function
