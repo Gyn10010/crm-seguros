@@ -159,7 +159,7 @@ const useLDRState = (): LDRState => {
           personType: c.person_type as 'Física' | 'Jurídica',
           city: c.city,
           state: c.state,
-          cpfCnpj: c.cpf_cnpj,
+          document: c.document,
           birthDate: c.birth_date,
           createdAt: c.created_at.split('T')[0],
         })));
@@ -189,10 +189,9 @@ const useLDRState = (): LDRState => {
           id: t.id,
           title: t.title,
           description: t.description || '',
-          status: t.status === 'completed' ? TaskStatus.Completed : TaskStatus.Pending,
+          status: t.status === 'completed' ? TaskStatus.Done : TaskStatus.ToDo,
           clientId: t.client_id,
           dueDate: t.due_date,
-          priority: t.priority as 'low' | 'medium' | 'high',
           recurrence: t.recurrence as TaskRecurrence,
         })));
       }
@@ -205,7 +204,7 @@ const useLDRState = (): LDRState => {
           clientId: r.client_id,
           status: r.status as RenewalStatus,
           salesperson: 'Usuário Demo', // Placeholder
-          expirationDate: r.expiration_date,
+          nextContactDate: r.next_contact_date,
           notes: r.notes || '',
         })));
       }
