@@ -38,6 +38,24 @@ export class UserService {
         LocalStorageService.set(STORAGE_KEYS.TEAM_USERS, updatedUsers);
 
         return newUser;
+    }
+
+    /**
+     * Update existing user
+     */
+    static update(updatedUser: User): boolean {
+        const users = this.getAll();
+        const updatedUsers = users.map(u =>
+            u.id === updatedUser.id ? updatedUser : u
+        );
+
+        return LocalStorageService.set(STORAGE_KEYS.TEAM_USERS, updatedUsers);
+    }
+
+    /**
+     * Delete user
+     */
+    static delete(userId: string): boolean {
         const users = this.getAll();
         const updatedUsers = users.filter(u => u.id !== userId);
 
