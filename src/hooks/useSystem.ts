@@ -60,7 +60,6 @@ export const useSystem = () => {
                     status: 'pending',
                     client_id: taskData.clientId,
                     due_date: taskData.dueDate,
-                    priority: taskData.priority,
                     recurrence: taskData.recurrence,
                     user_id: user.id
                 })
@@ -74,10 +73,9 @@ export const useSystem = () => {
                     id: data.id,
                     title: data.title,
                     description: data.description || '',
-                    status: TaskStatus.Pending,
+                    status: TaskStatus.ToDo,
                     clientId: data.client_id,
                     dueDate: data.due_date,
-                    priority: data.priority as 'low' | 'medium' | 'high',
                     recurrence: data.recurrence as TaskRecurrence,
                 };
                 setTasks(prev => [...prev, newTask]);
@@ -93,7 +91,7 @@ export const useSystem = () => {
         try {
             const { error } = await supabase
                 .from('tasks')
-                .update({ status: newStatus === TaskStatus.Completed ? 'completed' : 'pending' })
+                .update({ status: newStatus === TaskStatus.Done ? 'completed' : 'pending' })
                 .eq('id', taskId);
 
             if (error) throw error;
@@ -114,7 +112,6 @@ export const useSystem = () => {
                     description: updatedTask.description,
                     client_id: updatedTask.clientId,
                     due_date: updatedTask.dueDate,
-                    priority: updatedTask.priority,
                     recurrence: updatedTask.recurrence,
                 })
                 .eq('id', updatedTask.id);

@@ -222,8 +222,9 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
         try {
             if (editingUser) {
                 // Just update existing user in local state
-                updateUser({ ...editingUser, ...userFormData });
-                toast.success('Usuário atualizado com sucesso!');
+                const updatedUserData = { ...editingUser, ...userFormData };
+                updateUser(updatedUserData);
+                toast.success(`Usuário atualizado! Permissões: ${updatedUserData.permissions.length} selecionadas`);
             } else {
                 // Create new user via edge function
                 if (!password || password.length < 6) {
