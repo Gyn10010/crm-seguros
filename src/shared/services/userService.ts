@@ -38,46 +38,6 @@ export class UserService {
         LocalStorageService.set(STORAGE_KEYS.TEAM_USERS, updatedUsers);
 
         return newUser;
-    }
-
-    /**
-     * Update existing user
-     */
-    static update(updatedUser: User): boolean {
-        console.log('🔧 UserService.update CHAMADO');
-        console.log('📥 Usuário recebido para atualizar:', updatedUser);
-
-        const users = this.getAll();
-        console.log('📋 Usuários ANTES do update:', users);
-        console.log('📋 Quantidade de usuários ANTES:', users.length);
-
-        const updatedUsers = users.map(u => {
-            if (u.id === updatedUser.id) {
-                console.log('✅ ENCONTRADO usuário com ID:', u.id);
-                console.log('🔄 Substituindo:', u, '→', updatedUser);
-                return updatedUser;
-            }
-            return u;
-        });
-
-        console.log('📋 Usuários DEPOIS do map:', updatedUsers);
-        console.log('📋 Quantidade de usuários DEPOIS:', updatedUsers.length);
-
-        const result = LocalStorageService.set(STORAGE_KEYS.TEAM_USERS, updatedUsers);
-        console.log('💾 LocalStorage.set retornou:', result);
-
-        // Verificar o que foi salvo
-        const verificacao = this.getAll();
-        console.log('✔️ VERIFICAÇÃO - Usuários no localStorage agora:', verificacao);
-        console.log('✔️ VERIFICAÇÃO - Quantidade:', verificacao.length);
-
-        return result;
-    }
-
-    /**
-     * Delete user
-     */
-    static delete(userId: string): boolean {
         const users = this.getAll();
         const updatedUsers = users.filter(u => u.id !== userId);
 
