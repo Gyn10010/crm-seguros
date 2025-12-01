@@ -2,9 +2,10 @@ import { useState, useCallback } from 'react';
 import { User, SystemSettings, Task, Renewal, TaskStatus, RenewalStatus, TaskRecurrence } from '../types/index';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { UserService } from '@/shared/services';
 
 export const useSystem = () => {
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>(UserService.getAll());
     const [systemSettings, setSystemSettings] = useState<SystemSettings>({
         companyName: 'LDR Corretora',
         themeColor: '#0047AB',
@@ -16,65 +17,24 @@ export const useSystem = () => {
 
     // User Management
     const addUser = useCallback(async (userData: Omit<User, 'id'>) => {
-        // Note: Actual user creation in Supabase Auth is handled via Edge Function or client-side signUp.
-        // This function updates the local state after successful creation.
-        // For simplicity in this refactor, we'll keep the local state update logic here.
-        // The actual API call is usually done in the component (e.g., Settings.tsx).
-        const newUser: User = {
-            ...userData,
-            id: `u-${Date.now()}`, // Temporary ID, should be replaced by real ID from Auth
-        };
-        setUsers(prev => [...prev, newUser]);
+        const newUser = UserService.add(userData);
+        setUsers(UserService.getAll());
+        toast.success('Usuário adicionado com sucesso!');
     }, []);
 
     const updateUser = useCallback(async (updatedUser: User) => {
-        try {
-            const { error } = await supabase
-                .from('user_roles')
-                .update({ role: updatedUser.role }) // Only role is in user_roles for now
-                .eq('user_id', updatedUser.id);
-
-            if (error) throw error;
-
-            // Also update profiles if needed (name, avatar)
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .update({
-                    full_name: updatedUser.name,
-                    avatar_url: updatedUser.avatarUrl,
-                    role: updatedUser.role // Display role
-                })
-                .eq('id', updatedUser.id);
-
-            if (profileError) throw profileError;
-
-            setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
-            toast.success('Usuário atualizado com sucesso!');
-        } catch (error) {
-            console.error('Error updating user:', error);
-            toast.error('Erro ao atualizar usuário');
-        }
+        UserService.update(updatedUser);
+        setUsers(UserService.getAll());
     }, []);
 
     const deleteUser = useCallback(async (userId: string) => {
-        // Deleting users usually requires admin API call
-        setUsers(prev => prev.filter(u => u.id !== userId));
-        toast.info('Usuário removido da lista local (requer admin para remover do Auth)');
+        UserService.delete(userId);
+        setUsers(UserService.getAll());
+        toast.success('Usuário removido com sucesso!');
     }, []);
 
     const refreshUsers = useCallback(async () => {
-        const { data: profiles } = await supabase.from('profiles').select('*');
-        if (profiles) {
-            const mappedUsers: User[] = profiles.map(p => ({
-                id: p.id,
-                name: p.name || 'Usuário',
-                email: p.email || 'email@exemplo.com',
-                role: (p.role === 'Gestor' || p.role === 'Vendedor') ? p.role : 'Vendedor',
-                permissions: [],
-                avatarUrl: p.avatar_url || '',
-            }));
-            setUsers(mappedUsers);
-        }
+        setUsers(UserService.getAll());
     }, []);
 
     // System Settings Management
