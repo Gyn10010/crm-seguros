@@ -222,6 +222,7 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
         try {
             if (editingUser) {
                 // Update existing user in Supabase
+                // Note: Only update fields that exist in the profiles table
                 const { error } = await supabase
                     .from('profiles')
                     .update({
@@ -234,7 +235,9 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
 
                 if (error) {
                     console.error('Error updating profile:', error);
-                    toast.error('Erro ao atualizar usuário no banco de dados');
+                    console.error('Error details:', JSON.stringify(error, null, 2));
+                    toast.error(`Erro ao atualizar usuário: ${error.message || 'Erro desconhecido'}`);
+                    setIsSubmitting(false);
                     return;
                 }
 
