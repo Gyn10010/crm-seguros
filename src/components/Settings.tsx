@@ -221,7 +221,24 @@ const TeamManagement: React.FC<{ ldrState: LDRState }> = ({ ldrState }) => {
 
         try {
             if (editingUser) {
-                // Just update existing user in local state
+                // Update existing user in Supabase
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        name: userFormData.name,
+                        role: userFormData.role,
+                        avatar_url: userFormData.avatarUrl,
+                        permissions: userFormData.permissions,
+                    })
+                    .eq('id', editingUser.id);
+
+                if (error) {
+                    console.error('Error updating profile:', error);
+                    toast.error('Erro ao atualizar usuário no banco de dados');
+                    return;
+                }
+
+                // Update local state
                 const updatedUserData = { ...editingUser, ...userFormData };
                 updateUser(updatedUserData);
                 await refreshUsers(); // Refresh to get updated data from localStorage

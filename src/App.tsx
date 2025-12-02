@@ -19,6 +19,7 @@ import AlertModal from './components/AlertModal';
 import InsuranceCompanies from './components/InsuranceCompanies';
 import SalesFunnel from './components/SalesFunnel';
 import Auth from './components/Auth';
+import { MigrationHelper } from './components/MigrationHelper';
 
 const queryClient = new QueryClient();
 
@@ -194,6 +195,9 @@ function AppContent() {
         onClose={() => setIsAlertModalOpen(false)}
         message={alertModalMessage}
       />
+
+      {/* Migration Helper - shows when permissions column needs to be added */}
+      {isAdmin && <MigrationHelper />}
     </div>
   );
 }

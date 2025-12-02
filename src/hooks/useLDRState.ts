@@ -299,14 +299,22 @@ const useLDRState = (): LDRState => {
       // 11. Users (Profiles)
       const { data: profilesData } = await supabase.from('profiles').select('*');
       if (profilesData) {
-        const usersFromSupabase = profilesData.map(p => ({
-          id: p.id,
-          name: p.name || 'Usuário',
-          email: 'email@exemplo.com',
-          role: (p.role === 'Gestor' ? 'Gestor' : 'Vendedor') as 'Gestor' | 'Vendedor',
-          permissions: [] as Page[],
-          avatarUrl: p.avatar_url || '',
-        }));
+        const usersFromSupabase = profilesData.map(p => {
+          // Parse permissions from JSONB column, fallback to empty array
+          let userPermissions: Page[] = [];
+          if (p.permissions && Array.isArray(p.permissions)) {
+            userPermissions = p.permissions as Page[];
+          }
+
+          return {
+            id: p.id,
+            name: p.name || 'Usuário',
+            email: 'email@exemplo.com',
+            role: (p.role === 'Gestor' ? 'Gestor' : 'Vendedor') as 'Gestor' | 'Vendedor',
+            permissions: userPermissions,
+            avatarUrl: p.avatar_url || '',
+          };
+        });
 
         // Salvar no localStorage para UserService
         import('@/shared/services').then(({ STORAGE_KEYS, LocalStorageService }) => {
