@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { Analytics } from "@vercel/analytics/react";
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import ClientList from './components/ClientList';
@@ -19,7 +20,6 @@ import AlertModal from './components/AlertModal';
 import InsuranceCompanies from './components/InsuranceCompanies';
 import SalesFunnel from './components/SalesFunnel';
 import Auth from './components/Auth';
-import { MigrationHelper } from './components/MigrationHelper';
 
 const queryClient = new QueryClient();
 
@@ -195,9 +195,6 @@ function AppContent() {
         onClose={() => setIsAlertModalOpen(false)}
         message={alertModalMessage}
       />
-
-      {/* Migration Helper - shows when permissions column needs to be added */}
-      {isAdmin && <MigrationHelper />}
     </div>
   );
 }
@@ -208,6 +205,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AppContent />
+      <Analytics />
     </TooltipProvider>
   </QueryClientProvider>
 );
