@@ -356,24 +356,23 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <Button onClick={() => setShowFieldConfig(true)} variant="outline" className="flex items-center gap-2">
-                    <Settings className="h-4 w-4" />
-                    Configurar Campos
-                </Button>
-            </div>
-
-            {showFieldConfig && (
-                <PolicyFieldsConfig onClose={() => setShowFieldConfig(false)} />
-            )}
-
             <Tabs defaultValue="list" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 max-w-md">
-                    <TabsTrigger value="list">Lista de Apólices</TabsTrigger>
-                    <TabsTrigger value="import">Importar Apólices</TabsTrigger>
-                </TabsList>
+                <div className="flex justify-between items-center mb-6">
+                    <TabsList className="grid grid-cols-2 w-auto">
+                        <TabsTrigger value="list">Lista de Apólices</TabsTrigger>
+                        <TabsTrigger value="import">Importar Apólices</TabsTrigger>
+                    </TabsList>
+                    <Button onClick={() => setShowFieldConfig(true)} variant="outline" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        Configurar Campos
+                    </Button>
+                </div>
 
-                <TabsContent value="list" className="space-y-6 mt-6">
+                {showFieldConfig && (
+                    <PolicyFieldsConfig onClose={() => setShowFieldConfig(false)} />
+                )}
+
+                <TabsContent value="list" className="space-y-6 mt-0">
                     <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                         <h2 className="text-xl font-bold text-text-primary mb-4">Ranking de Seguradoras (Apólices Ativas)</h2>
                         <div className="overflow-x-auto">
@@ -489,7 +488,7 @@ const PolicyList: React.FC<PolicyListProps> = ({ ldrState }) => {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="import" className="mt-6">
+                <TabsContent value="import" className="mt-0">
                     <ImportCSV />
                 </TabsContent>
             </Tabs>
