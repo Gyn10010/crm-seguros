@@ -266,6 +266,48 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  const handleResetPassword = async (userId: string) => {
+    const newPassword = prompt('Digite a nova senha (mínimo 6 caracteres):');
+
+    if (!newPassword) return;
+
+    if (newPassword.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('Sessão expirada');
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/reset-user-password`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId, newPassword }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao resetar senha');
+      }
+
+      toast.success('Senha resetada com sucesso!');
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      toast.error(error instanceof Error ? error.message : 'Erro ao resetar senha');
+    }
+  };
+
   const toggleUserRole = async (userId: string, currentRole: 'admin' | 'user') => {
     try {
       if (currentRole === 'admin') {
@@ -339,8 +381,17 @@ const UserManagement: React.FC = () => {
                 <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{user.email}</td>
                 <td className="py-4 px-4 whitespace-nowrap text-sm text-text-secondary">{user.role}</td>
                 <td className="py-4 px-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex items-center gap-4">
-                    <button onClick={() => handleOpenUserModal(user)} className="text-text-secondary hover:text-brand-primary transition-colors"><EditIcon /></button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => handleOpenUserModal(user)} className="text-text-secondary hover:text-brand-primary transition-colors" title="Editar">
+                      <EditIcon />
+                    </button>
+                    <button
+                      onClick={() => handleResetPassword(user.id)}
+                      className="text-xs px-2 py-1 rounded bg-ui-border hover:bg-ui-hover transition-colors"
+                      title="Resetar Senha"
+                    >
+                      Resetar Senha
+                    </button>
                     <button onClick={() => toggleUserRole(user.id, user.user_role || 'user')} className="text-xs px-2 py-1 rounded bg-ui-border hover:bg-ui-hover transition-colors">
                       {user.user_role === 'admin' ? 'Remover Admin' : 'Admin'}
                     </button>
