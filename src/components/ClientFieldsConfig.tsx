@@ -40,23 +40,30 @@ export function ClientFieldsConfig({ userId }: ClientFieldsConfigProps) {
 
   const loadFieldConfigs = async () => {
     try {
+      console.log('Loading field configs for user:', userId);
+
       const { data, error } = await supabase
         .from('client_field_config')
         .select('*')
         .eq('user_id', userId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('Field configs loaded:', data);
 
       const configs: Record<string, boolean> = {};
       data?.forEach((config) => {
         configs[config.field_name] = config.is_required;
       });
       setFieldConfigs(configs);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading field configs:', error);
       toast({
         title: 'Erro',
-        description: 'Erro ao carregar configurações de campos',
+        description: `Erro ao carregar configurações de campos: ${error.message || 'Erro desconhecido'}`,
         variant: 'destructive',
       });
     } finally {
@@ -66,6 +73,8 @@ export function ClientFieldsConfig({ userId }: ClientFieldsConfigProps) {
 
   const handleToggle = async (fieldName: string, isRequired: boolean) => {
     try {
+      console.log('Updating field config:', { userId, fieldName, isRequired });
+
       const { error } = await supabase
         .from('client_field_config')
         .upsert({
@@ -76,7 +85,10 @@ export function ClientFieldsConfig({ userId }: ClientFieldsConfigProps) {
           onConflict: 'user_id,field_name',
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       setFieldConfigs((prev) => ({
         ...prev,
@@ -87,11 +99,11 @@ export function ClientFieldsConfig({ userId }: ClientFieldsConfigProps) {
         title: 'Sucesso',
         description: 'Configuração atualizada',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating field config:', error);
       toast({
         title: 'Erro',
-        description: 'Erro ao atualizar configuração',
+        description: `Erro ao atualizar configuração: ${error.message || 'Erro desconhecido'}`,
         variant: 'destructive',
       });
     }

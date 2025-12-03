@@ -13,6 +13,7 @@ import { Switch } from './ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ClientFieldsConfig } from './ClientFieldsConfig';
 import { ImportClients } from './ImportClients';
+import { supabase } from '@/integrations/supabase/client';
 
 
 interface ClientListProps {
@@ -374,13 +375,16 @@ const ClientList: React.FC<ClientListProps> = ({ ldrState }) => {
 
     useEffect(() => {
         const getCurrentUser = async () => {
-            const sessionStr = localStorage.getItem('sb-session');
-            if (sessionStr) {
-                const session = JSON.parse(sessionStr);
-                setCurrentUserId(session.user.id);
-            } else {
-                // Fallback for dev/demo
-                setCurrentUserId('mock-user-id');
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error) throw error;
+                if (user) {
+                    setCurrentUserId(user.id);
+                } else {
+                    console.warn('No authenticated user found');
+                }
+            } catch (error) {
+                console.error('Error getting current user:', error);
             }
         };
         getCurrentUser();
