@@ -50,12 +50,13 @@ const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [jobRoles, setJobRoles] = useState<string[]>([]);
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [userFormData, setUserFormData] = useState<Omit<UserProfile, 'id' | 'created_at' | 'user_role'>>({
     name: '',
     email: '',
-    role: 'Vendedor',
+    role: '',
     permissions: [],
     avatar_url: '',
   });
@@ -67,6 +68,7 @@ const UserManagement: React.FC = () => {
   useEffect(() => {
     checkAdminStatus();
     loadUsers();
+    loadJobRoles();
   }, []);
 
   useEffect(() => {
@@ -94,6 +96,22 @@ const UserManagement: React.FC = () => {
       .maybeSingle();
 
     setIsAdmin(!!data);
+  };
+
+  const loadJobRoles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('job_roles')
+        .select('name')
+        .eq('is_active', true)
+        .order('order_index', { ascending: true });
+
+      if (error) throw error;
+      setJobRoles(data?.map(r => r.name) || []);
+    } catch (error) {
+      console.error('Error loading job roles:', error);
+      toast.error('Erro ao carregar cargos');
+    }
   };
 
   const loadUsers = async () => {
@@ -131,7 +149,7 @@ const UserManagement: React.FC = () => {
   const handleOpenUserModal = (user: UserProfile | null = null) => {
     setEditingUser(user);
     if (!user) {
-      setUserFormData({ name: '', email: '', role: 'Vendedor', permissions: [], avatar_url: '' });
+      setUserFormData({ name: '', email: '', role: jobRoles[0] || '', permissions: [], avatar_url: '' });
       setPassword('');
       setAvatarPreview(null);
     }
@@ -370,9 +388,11 @@ const UserManagement: React.FC = () => {
                 </div>
                 <div>
                   <label htmlFor="role" className="block text-sm font-medium text-text-secondary mb-1">Cargo</label>
-                  <select name="role" id="role" value={userFormData.role} onChange={handleUserFormChange} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
-                    <option value="Vendedor">Vendedor</option>
-                    <option value="Gestor">Gestor</option>
+                  <select name="role" id="role" value={userFormData.role} onChange={handleUserFormChange} required className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary">
+                    <option value="">Selecione um cargo</option>
+                    {jobRoles.map(role => (
+                      <option key={role} value={role}>{role}</option>
+                    ))}
                   </select>
                 </div>
                 {!editingUser && (
