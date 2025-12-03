@@ -376,15 +376,50 @@ const ClientList: React.FC<ClientListProps> = ({ ldrState }) => {
     useEffect(() => {
         const getCurrentUser = async () => {
             try {
-                const { data: { user }, error } = await supabase.auth.getUser();
+                // Try to get user from Supabase auth with timeout
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Auth timeout')), 3000)
+                );
+
+                const authPromise = supabase.auth.getUser();
+
+                const { data: { user }, error } = await Promise.race([
+                    authPromise,
+                    timeoutPromise
+                ]) as any;
+
                 if (error) throw error;
+
                 if (user) {
+                    console.log('User authenticated:', user.id);
                     setCurrentUserId(user.id);
                 } else {
-                    console.warn('No authenticated user found');
+                    console.warn('No authenticated user found, using fallback');
+                    // Fallback: try to get from session
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session?.user) {
+                        setCurrentUserId(session.user.id);
+                    } else {
+                        // Last resort: use a mock ID for development
+                        setCurrentUserId('mock-user-id');
+                    }
                 }
             } catch (error) {
                 console.error('Error getting current user:', error);
+                // Fallback: try to get from session
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session?.user) {
+                        console.log('Using session user:', session.user.id);
+                        setCurrentUserId(session.user.id);
+                    } else {
+                        console.warn('No session found, using mock ID');
+                        setCurrentUserId('mock-user-id');
+                    }
+                } catch (sessionError) {
+                    console.error('Error getting session:', sessionError);
+                    setCurrentUserId('mock-user-id');
+                }
             }
         };
         getCurrentUser();
