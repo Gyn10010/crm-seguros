@@ -179,7 +179,7 @@ function AppContent() {
         })()}
       />
       <main className="flex-1">
-        <div className={currentPage === Page.SalesFunnel ? 'flex flex-col overflow-hidden h-full' : 'max-w-[1400px] mx-auto'}>
+        <div className={currentPage === Page.SalesFunnel ? 'flex flex-col overflow-hidden h-full' : ''}>
           {renderContent()}
         </div>
       </main>
