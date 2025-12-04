@@ -287,7 +287,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ ldrState }) => {
 
 
     return (
-        <div className="space-y-6">
+        <div className="p-6 space-y-6">
             <div className="w-full flex justify-end mb-6">
                 <Button
                     onClick={handleOpenNewModal}

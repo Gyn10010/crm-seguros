@@ -207,7 +207,7 @@ const InsuranceCompanies: React.FC<InsuranceCompaniesProps> = ({ ldrState }) => 
     };
 
     return (
-        <div className="space-y-6">
+        <div className="p-6 space-y-6">
             <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                     {/* Search Bar */}

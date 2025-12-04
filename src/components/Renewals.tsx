@@ -166,7 +166,7 @@ const Renewals: React.FC<RenewalsProps> = ({ ldrState }) => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="p-6 space-y-6">
             <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                 <div className="flex justify-start mb-4">
                     <button

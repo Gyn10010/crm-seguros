@@ -517,7 +517,7 @@ const ClientList: React.FC<ClientListProps> = ({ ldrState }) => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="p-6 space-y-6">
             <div className="bg-ui-card p-6 rounded-lg border border-ui-border shadow-sm">
                 <div className="flex justify-between items-center mb-6 gap-4">
                     <div className="relative flex-1 max-w-md">

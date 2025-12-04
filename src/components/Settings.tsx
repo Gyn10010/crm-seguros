@@ -144,7 +144,7 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="p-6 space-y-6">
             <div className="space-y-4">
                 {isAdmin && (
                     <AccordionSection title="GERENCIAMENTO DE USUÁRIOS" isOpen={openAccordion === 'auth-users'} onToggle={() => toggleAccordion('auth-users')}>
