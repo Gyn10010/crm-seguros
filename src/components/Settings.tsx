@@ -24,6 +24,7 @@ import { ImportCSV } from './ImportCSV';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
+import MyProfile from './MyProfile';
 
 interface SettingsProps {
     ldrState: LDRState;
@@ -146,6 +147,10 @@ const Settings: React.FC<SettingsProps> = ({ ldrState, isAdmin = false }) => {
     return (
         <div className="p-6 space-y-6">
             <div className="space-y-4">
+                <AccordionSection title="MEU PERFIL" isOpen={openAccordion === 'my-profile'} onToggle={() => toggleAccordion('my-profile')}>
+                    <MyProfile />
+                </AccordionSection>
+
                 {isAdmin && (
                     <AccordionSection title="GERENCIAMENTO DE USUÁRIOS" isOpen={openAccordion === 'auth-users'} onToggle={() => toggleAccordion('auth-users')}>
                         <UserManagement />
