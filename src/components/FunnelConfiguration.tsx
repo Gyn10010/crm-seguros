@@ -152,8 +152,8 @@ const StageModal: React.FC<{
 };
 
 const FunnelConfigurationComponent: React.FC<FunnelConfigurationProps> = ({ ldrState }) => {
-  const { 
-    funnelConfigurations, 
+  const {
+    funnelConfigurations,
     funnelStages,
     addFunnelConfiguration,
     updateFunnelConfiguration,
@@ -219,7 +219,7 @@ const FunnelConfigurationComponent: React.FC<FunnelConfigurationProps> = ({ ldrS
 
   const handleSubmitStage = (data: { stageName: string }) => {
     if (!selectedFunnelKey) return;
-    
+
     if (editingStage) {
       updateFunnelStage({ ...editingStage, stageName: data.stageName });
     } else {
@@ -253,13 +253,12 @@ const FunnelConfigurationComponent: React.FC<FunnelConfigurationProps> = ({ ldrS
               </p>
             ) : (
               sortedFunnels.map((funnel, index) => (
-                <Card 
-                  key={funnel.id} 
-                  className={`p-4 cursor-pointer transition-colors ${
-                    selectedFunnelKey === funnel.funnelKey 
-                      ? 'bg-brand-primary/10 border-brand-primary' 
+                <Card
+                  key={funnel.id}
+                  className={`p-4 cursor-pointer transition-colors ${selectedFunnelKey === funnel.funnelKey
+                      ? 'bg-brand-primary/10 border-brand-primary'
                       : 'bg-ui-background border-ui-border hover:bg-ui-hover'
-                  }`}
+                    }`}
                   onClick={() => setSelectedFunnelKey(funnel.funnelKey)}
                 >
                   <div className="flex items-center justify-between">
@@ -267,13 +266,12 @@ const FunnelConfigurationComponent: React.FC<FunnelConfigurationProps> = ({ ldrS
                       <span className="text-sm font-bold text-text-secondary">
                         #{index + 1}
                       </span>
-                      <span className={`font-semibold ${
-                        selectedFunnelKey === funnel.funnelKey ? 'text-brand-primary' : 'text-text-primary'
-                      }`}>
+                      <span className={`font-semibold ${selectedFunnelKey === funnel.funnelKey ? 'text-brand-primary' : 'text-text-primary'
+                        }`}>
                         {funnel.funnelName}
                       </span>
                       <span className="text-xs text-text-muted">
-                        ({filteredStages.filter(s => s.funnelKey === funnel.funnelKey).length} estágios)
+                        ({funnelStages.filter(s => s.funnelKey === funnel.funnelKey).length} estágios)
                       </span>
                     </div>
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -326,7 +324,7 @@ const FunnelConfigurationComponent: React.FC<FunnelConfigurationProps> = ({ ldrS
                 + Novo Estágio
               </Button>
             </div>
-            
+
             <div className="space-y-2">
               {filteredStages.length === 0 ? (
                 <p className="text-center text-text-muted py-8">
