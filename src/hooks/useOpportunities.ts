@@ -133,6 +133,7 @@ export const useOpportunities = () => {
 
     const updateOpportunityStage = useCallback(async (opportunityId: string, newStage: string) => {
         try {
+            // 1. Atualizar o estágio da oportunidade
             const { error } = await supabase
                 .from('opportunities')
                 .update({ stage: newStage })
@@ -140,12 +141,101 @@ export const useOpportunities = () => {
 
             if (error) throw error;
 
-            setOpportunities(prev => prev.map(o => o.id === opportunityId ? { ...o, stage: newStage } : o));
+            // 2. Buscar a oportunidade para pegar o funnelType e responsáveis
+            const opportunity = opportunities.find(o => o.id === opportunityId);
+            if (!opportunity) {
+                setOpportunities(prev => prev.map(o => o.id === opportunityId ? { ...o, stage: newStage } : o));
+                return;
+            }
+
+            // 3. Buscar templates de atividades para o novo estágio
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                setOpportunities(prev => prev.map(o => o.id === opportunityId ? { ...o, stage: newStage } : o));
+                return;
+            }
+
+            const { data: templates } = await supabase
+                .from('funnel_activity_templates')
+                .select('*')
+                .eq('user_id', user.id)
+                .eq('funnel_type', opportunity.funnelType)
+                .eq('stage', newStage)
+                .order('order_index', { ascending: true });
+
+            // 4. Criar atividades baseadas nos templates
+            if (templates && templates.length > 0) {
+                const newActivities = templates.map(template => {
+                    // Calcular data de vencimento
+                    const dueDate = new Date();
+                    dueDate.setHours(dueDate.getHours() + (template.max_hours || 24));
+
+                    // Determinar responsável baseado no tipo
+                    let assignedTo = opportunity.salesperson; // padrão
+                    if (template.responsible_type === 'Técnico') {
+                        assignedTo = opportunity.technicalResponsible;
+                    } else if (template.responsible_type === 'Renovação') {
+                        assignedTo = opportunity.renewalResponsible;
+                    }
+
+                    return {
+                        opportunity_id: opportunityId,
+                        text: template.activity_text,
+                        stage: newStage,
+                        completed: false,
+                        assigned_to: assignedTo,
+                        due_date: dueDate.toISOString().split('T')[0],
+                        due_time: '12:00'
+                    };
+                });
+
+                // Inserir todas as atividades
+                const { data: insertedActivities, error: insertError } = await supabase
+                    .from('funnel_activities')
+                    .insert(newActivities)
+                    .select();
+
+                if (insertError) {
+                    console.error('Error creating activities:', insertError);
+                    // Continuar mesmo se houver erro ao criar atividades
+                }
+
+                // Atualizar estado local
+                if (insertedActivities) {
+                    const formattedActivities: FunnelActivity[] = insertedActivities.map(a => ({
+                        id: a.id,
+                        text: a.text,
+                        stage: a.stage,
+                        completed: a.completed,
+                        assignedTo: a.assigned_to,
+                        dueDate: a.due_date,
+                        dueTime: a.due_time
+                    }));
+
+                    setOpportunities(prev => prev.map(o => {
+                        if (o.id === opportunityId) {
+                            return {
+                                ...o,
+                                stage: newStage,
+                                activities: [...o.activities, ...formattedActivities]
+                            };
+                        }
+                        return o;
+                    }));
+
+                    toast.success(`Oportunidade movida para "${newStage}" e ${formattedActivities.length} atividade(s) criada(s)!`);
+                } else {
+                    setOpportunities(prev => prev.map(o => o.id === opportunityId ? { ...o, stage: newStage } : o));
+                }
+            } else {
+                // Se não houver templates, apenas atualizar o estágio
+                setOpportunities(prev => prev.map(o => o.id === opportunityId ? { ...o, stage: newStage } : o));
+            }
         } catch (error) {
             console.error('Error updating opportunity stage:', error);
             toast.error('Erro ao atualizar estágio da oportunidade');
         }
-    }, []);
+    }, [opportunities]);
 
     // Funnel Activities Management
     const addFunnelActivity = useCallback(async (opportunityId: string, activity: Omit<FunnelActivity, 'id'>) => {

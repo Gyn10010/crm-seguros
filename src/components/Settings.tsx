@@ -11,20 +11,16 @@
  * All RLS policies and admin checks correctly use user_roles.role
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { LDRState } from '../hooks/useLDRState';
-import { User, Page } from '../types/index';
-import { CloseIcon, TrashIcon, EditIcon } from './icons/Icons';
 import FunnelTemplates from './FunnelTemplates';
 import FunnelConfigurationComponent from './FunnelConfiguration';
 import UserManagement from './UserManagement';
 import ActivityTemplates from './ActivityTemplates';
 import JobRoles from './JobRoles';
 import { ImportCSV } from './ImportCSV';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Button } from './ui/button';
 import MyProfile from './MyProfile';
+import { Button } from './ui/button';
 
 interface SettingsProps {
     ldrState: LDRState;
