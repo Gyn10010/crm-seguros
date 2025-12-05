@@ -72,6 +72,68 @@ export const useOpportunities = () => {
                     createdAt: data.created_at.split('T')[0],
                     activities: [],
                 };
+
+                // Buscar templates de atividades para o estágio inicial
+                const { data: templates } = await supabase
+                    .from('funnel_activity_templates')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .eq('funnel_type', opportunityData.funnelType)
+                    .eq('stage', initialStage)
+                    .order('order_index', { ascending: true });
+
+                // Criar atividades baseadas nos templates
+                if (templates && templates.length > 0) {
+                    const newActivities = templates.map(template => {
+                        // Calcular data de vencimento
+                        const dueDate = new Date();
+                        dueDate.setHours(dueDate.getHours() + (template.max_hours || 24));
+
+                        // Determinar responsável baseado no tipo
+                        let assignedTo = opportunityData.salesperson; // padrão
+                        if (template.responsible_type === 'Técnico') {
+                            assignedTo = opportunityData.technicalResponsible;
+                        } else if (template.responsible_type === 'Renovação') {
+                            assignedTo = opportunityData.renewalResponsible;
+                        }
+
+                        return {
+                            opportunity_id: data.id,
+                            text: template.activity_text,
+                            stage: initialStage,
+                            completed: false,
+                            assigned_to: assignedTo,
+                            due_date: dueDate.toISOString().split('T')[0],
+                            due_time: '12:00'
+                        };
+                    });
+
+                    // Inserir todas as atividades
+                    const { data: insertedActivities, error: insertError } = await supabase
+                        .from('funnel_activities')
+                        .insert(newActivities)
+                        .select();
+
+                    if (insertError) {
+                        console.error('Error creating initial activities:', insertError);
+                    }
+
+                    // Atualizar oportunidade com as atividades criadas
+                    if (insertedActivities) {
+                        const formattedActivities: FunnelActivity[] = insertedActivities.map(a => ({
+                            id: a.id,
+                            text: a.text,
+                            stage: a.stage,
+                            completed: a.completed,
+                            assignedTo: a.assigned_to,
+                            dueDate: a.due_date,
+                            dueTime: a.due_time
+                        }));
+
+                        newOpportunity.activities = formattedActivities;
+                    }
+                }
+
                 setOpportunities(prev => [...prev, newOpportunity]);
                 toast.success('Oportunidade criada com sucesso!');
             }
