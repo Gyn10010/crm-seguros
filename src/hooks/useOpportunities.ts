@@ -79,7 +79,7 @@ export const useOpportunities = () => {
                     .from('funnel_activity_templates')
                     .select('*')
                     .eq('user_id', user.id)
-                    .eq('funnel_type', opportunityData.funnelType)
+                    .ilike('funnel_type', opportunityData.funnelType)
                     .eq('stage', initialStage)
                     .order('order_index', { ascending: true });
 
@@ -231,7 +231,7 @@ export const useOpportunities = () => {
                 .from('funnel_activity_templates')
                 .select('*')
                 .eq('user_id', user.id)
-                .eq('funnel_type', opportunity.funnelType)
+                .ilike('funnel_type', opportunity.funnelType)
                 .eq('stage', newStage)
                 .order('order_index', { ascending: true });
 
