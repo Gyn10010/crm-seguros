@@ -94,17 +94,13 @@ export const useOpportunities = () => {
                         const dueDate = new Date();
                         dueDate.setHours(dueDate.getHours() + (template.max_hours || 24));
 
-                        // Determinar responsável baseado no tipo
-                        // NOTA: salesperson, technicalResponsible, renewalResponsible são NOMES, não UUIDs
-                        // O banco espera UUID, então deixamos null por enquanto
-                        let assignedTo = null;
 
                         return {
                             opportunity_id: data.id,
                             text: template.activity_text,
                             stage: initialStage,
                             completed: false,
-                            assigned_to: assignedTo,
+                            assigned_to: user.id, // Usa o UUID do usuário logado
                             due_date: dueDate.toISOString().split('T')[0],
                             due_time: '12:00'
                         };
@@ -243,17 +239,13 @@ export const useOpportunities = () => {
                     const dueDate = new Date();
                     dueDate.setHours(dueDate.getHours() + (template.max_hours || 24));
 
-                    // Determinar responsável baseado no tipo
-                    // NOTA: salesperson, technicalResponsible, renewalResponsible são NOMES, não UUIDs
-                    // O banco espera UUID, então deixamos null por enquanto
-                    let assignedTo = null;
 
                     return {
                         opportunity_id: opportunityId,
                         text: template.activity_text,
                         stage: newStage,
                         completed: false,
-                        assigned_to: assignedTo,
+                        assigned_to: user.id, // Usa o UUID do usuário logado
                         due_date: dueDate.toISOString().split('T')[0],
                         due_time: '12:00'
                     };
