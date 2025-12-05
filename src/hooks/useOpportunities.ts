@@ -95,12 +95,9 @@ export const useOpportunities = () => {
                         dueDate.setHours(dueDate.getHours() + (template.max_hours || 24));
 
                         // Determinar responsável baseado no tipo
-                        let assignedTo = opportunityData.salesperson; // padrão
-                        if (template.responsible_type === 'Técnico') {
-                            assignedTo = opportunityData.technicalResponsible;
-                        } else if (template.responsible_type === 'Renovação') {
-                            assignedTo = opportunityData.renewalResponsible;
-                        }
+                        // NOTA: salesperson, technicalResponsible, renewalResponsible são NOMES, não UUIDs
+                        // O banco espera UUID, então deixamos null por enquanto
+                        let assignedTo = null;
 
                         return {
                             opportunity_id: data.id,
@@ -247,12 +244,9 @@ export const useOpportunities = () => {
                     dueDate.setHours(dueDate.getHours() + (template.max_hours || 24));
 
                     // Determinar responsável baseado no tipo
-                    let assignedTo = opportunity.salesperson; // padrão
-                    if (template.responsible_type === 'Técnico') {
-                        assignedTo = opportunity.technicalResponsible;
-                    } else if (template.responsible_type === 'Renovação') {
-                        assignedTo = opportunity.renewalResponsible;
-                    }
+                    // NOTA: salesperson, technicalResponsible, renewalResponsible são NOMES, não UUIDs
+                    // O banco espera UUID, então deixamos null por enquanto
+                    let assignedTo = null;
 
                     return {
                         opportunity_id: opportunityId,
