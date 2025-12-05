@@ -74,7 +74,8 @@ export const useOpportunities = () => {
                 };
 
                 // Buscar templates de atividades para o estágio inicial
-                const { data: templates } = await supabase
+                console.log('🔍 Buscando templates para:', { funnelType: opportunityData.funnelType, stage: initialStage, userId: user.id });
+                const { data: templates, error: templatesError } = await supabase
                     .from('funnel_activity_templates')
                     .select('*')
                     .eq('user_id', user.id)
@@ -82,8 +83,12 @@ export const useOpportunities = () => {
                     .eq('stage', initialStage)
                     .order('order_index', { ascending: true });
 
+                console.log('📋 Templates encontrados:', templates?.length || 0, templates);
+                if (templatesError) console.error('❌ Erro ao buscar templates:', templatesError);
+
                 // Criar atividades baseadas nos templates
                 if (templates && templates.length > 0) {
+                    console.log('✅ Criando', templates.length, 'atividades...');
                     const newActivities = templates.map(template => {
                         // Calcular data de vencimento
                         const dueDate = new Date();
@@ -115,7 +120,9 @@ export const useOpportunities = () => {
                         .select();
 
                     if (insertError) {
-                        console.error('Error creating initial activities:', insertError);
+                        console.error('❌ Error creating initial activities:', insertError);
+                    } else {
+                        console.log('✅ Atividades criadas com sucesso!', insertedActivities?.length);
                     }
 
                     // Atualizar oportunidade com as atividades criadas
@@ -132,6 +139,8 @@ export const useOpportunities = () => {
 
                         newOpportunity.activities = formattedActivities;
                     }
+                } else {
+                    console.log('⚠️ Nenhum template encontrado para este estágio');
                 }
 
                 setOpportunities(prev => [...prev, newOpportunity]);
@@ -217,7 +226,8 @@ export const useOpportunities = () => {
                 return;
             }
 
-            const { data: templates } = await supabase
+            console.log('🔍 [MOVE] Buscando templates para:', { funnelType: opportunity.funnelType, newStage, userId: user.id });
+            const { data: templates, error: templatesError } = await supabase
                 .from('funnel_activity_templates')
                 .select('*')
                 .eq('user_id', user.id)
@@ -225,8 +235,12 @@ export const useOpportunities = () => {
                 .eq('stage', newStage)
                 .order('order_index', { ascending: true });
 
+            console.log('📋 [MOVE] Templates encontrados:', templates?.length || 0, templates);
+            if (templatesError) console.error('❌ [MOVE] Erro ao buscar templates:', templatesError);
+
             // 4. Criar atividades baseadas nos templates
             if (templates && templates.length > 0) {
+                console.log('✅ [MOVE] Criando', templates.length, 'atividades...');
                 const newActivities = templates.map(template => {
                     // Calcular data de vencimento
                     const dueDate = new Date();
