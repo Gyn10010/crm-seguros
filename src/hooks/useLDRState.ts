@@ -242,6 +242,7 @@ const useLDRState = (): LDRState => {
             assignedTo: a.assigned_to,
             dueDate: a.due_date || undefined,
             dueTime: a.due_time || undefined,
+            startedAt: a.started_at || undefined,
           })),
         })));
       }

@@ -1,10 +1,12 @@
 
+
 import React, { useState, DragEvent, useEffect, useRef, useMemo } from 'react';
 import { LDRState } from '../hooks/useLDRState';
 import { Opportunity, DealType, FunnelActivity, Client } from '../types/index';
 import { CloseIcon } from './icons/Icons';
 import { Button } from './ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { ActivityTimer } from './ActivityTimer';
 
 interface SalesFunnelProps {
     ldrState: LDRState;
@@ -48,23 +50,45 @@ const OpportunityCard: React.FC<{ opportunity: Opportunity; ldrState: LDRState; 
                 </div>
             </div>
 
+
             {currentStageActivities.length > 0 && (
                 <div className="mt-3 pt-2 border-t border-ui-border space-y-1">
                     <h5 className="text-xs font-bold text-text-secondary mb-1">Atividades do Estágio</h5>
                     {/* Show only the first activity */}
-                    <label key={currentStageActivities[0].id} className="flex items-center text-xs text-text-primary cursor-pointer hover:bg-ui-hover p-1 rounded-md" onClick={e => e.stopPropagation()}>
-                        <input
-                            type="checkbox"
-                            checked={currentStageActivities[0].completed}
-                            onChange={(e) => {
-                                onActivityToggle(opportunity.id, { ...currentStageActivities[0], completed: e.target.checked });
-                            }}
-                            className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary"
-                        />
-                        <span className={currentStageActivities[0].completed ? 'line-through text-text-muted' : ''}>
-                            {currentStageActivities[0].text}
-                        </span>
-                    </label>
+                    {(() => {
+                        const activity = currentStageActivities[0];
+                        const isOverdue = activity.dueDate && !activity.completed &&
+                            new Date(activity.dueDate + 'T' + (activity.dueTime || '23:59')) < new Date();
+
+                        return (
+                            <label
+                                key={activity.id}
+                                className={`flex items-center justify-between text-xs cursor-pointer p-1.5 rounded-md ${isOverdue
+                                    ? 'bg-error/10 border border-error/30 hover:bg-error/15'
+                                    : 'text-text-primary hover:bg-ui-hover'
+                                    }`}
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div className="flex items-center flex-1 min-w-0">
+                                    <input
+                                        type="checkbox"
+                                        checked={activity.completed}
+                                        onChange={(e) => {
+                                            onActivityToggle(opportunity.id, { ...activity, completed: e.target.checked });
+                                        }}
+                                        className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary flex-shrink-0"
+                                    />
+                                    {isOverdue && <span className="mr-1">⚠️</span>}
+                                    <span className={activity.completed ? 'line-through text-text-muted' : isOverdue ? 'text-error font-medium' : ''}>
+                                        {activity.text}
+                                    </span>
+                                </div>
+                                {activity.startedAt && !activity.completed && (
+                                    <ActivityTimer startedAt={activity.startedAt} className="text-[10px] text-brand-primary font-medium ml-2 flex-shrink-0" />
+                                )}
+                            </label>
+                        );
+                    })()}
                     {/* Show count of remaining activities if there are more */}
                     {currentStageActivities.length > 1 && (
                         <div className="text-xs text-text-muted italic pl-6">
@@ -652,34 +676,60 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
                                             <p className="text-sm text-text-muted italic">Nenhuma atividade cadastrada ainda.</p>
                                         ) : (
                                             <ul className="space-y-2">
-                                                {editingOpportunity.activities.map(activity => (
-                                                    <li key={activity.id} className="text-sm text-text-primary p-2 bg-ui-background rounded-md">
-                                                        <div className="flex items-start justify-between gap-3">
-                                                            <label className="flex items-center flex-1 min-w-0">
-                                                                <input type="checkbox" checked={activity.completed} onChange={() => updateFunnelActivity(editingOpportunity.id, { ...activity, completed: !activity.completed })} className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary flex-shrink-0" />
-                                                                <span className={activity.completed ? 'line-through text-text-muted' : ''}>{activity.text}</span>
-                                                            </label>
-                                                            <div className="flex flex-col gap-1 text-xs text-text-muted flex-shrink-0">
-                                                                <div className="flex items-center gap-2">
-                                                                    {activity.dueDate && (
-                                                                        <span>📅 {new Date(activity.dueDate).toLocaleDateString('pt-BR')}</span>
-                                                                    )}
-                                                                    {activity.dueTime && (
-                                                                        <span>🕐 {activity.dueTime}</span>
-                                                                    )}
+                                                {editingOpportunity.activities.map(activity => {
+                                                    const isOverdue = activity.dueDate && !activity.completed &&
+                                                        new Date(activity.dueDate + 'T' + (activity.dueTime || '23:59')) < new Date();
+
+                                                    return (
+                                                        <li
+                                                            key={activity.id}
+                                                            className={`text-sm p-2 rounded-md ${isOverdue
+                                                                ? 'bg-error/10 border border-error/30'
+                                                                : 'bg-ui-background text-text-primary'
+                                                                }`}
+                                                        >
+                                                            <div className="flex items-start justify-between gap-3">
+                                                                <label className="flex items-center flex-1 min-w-0">
+                                                                    <input type="checkbox" checked={activity.completed} onChange={() => updateFunnelActivity(editingOpportunity.id, { ...activity, completed: !activity.completed })} className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary flex-shrink-0" />
+                                                                    {isOverdue && <span className="mr-1.5">⚠️</span>}
+                                                                    <span className={activity.completed ? 'line-through text-text-muted' : isOverdue ? 'text-error font-medium' : ''}>
+                                                                        {activity.text}
+                                                                    </span>
+                                                                </label>
+                                                                <div className="flex flex-col gap-1 text-xs text-text-muted flex-shrink-0">
+                                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                                        {activity.dueDate && (
+                                                                            <span className={isOverdue ? 'text-error font-bold' : ''}>
+                                                                                📅 {new Date(activity.dueDate).toLocaleDateString('pt-BR')}
+                                                                            </span>
+                                                                        )}
+                                                                        {activity.dueTime && (
+                                                                            <span className={isOverdue ? 'text-error font-bold' : ''}>
+                                                                                🕐 {activity.dueTime}
+                                                                            </span>
+                                                                        )}
+                                                                        {isOverdue && (
+                                                                            <span className="px-1.5 py-0.5 bg-error text-white text-[10px] font-bold rounded uppercase">
+                                                                                Atrasada
+                                                                            </span>
+                                                                        )}
+                                                                        {activity.startedAt && !activity.completed && (
+                                                                            <ActivityTimer startedAt={activity.startedAt} className="text-brand-primary font-semibold" />
+                                                                        )}
+                                                                    </div>
+                                                                    <select
+                                                                        value={activity.assignedTo}
+                                                                        onChange={(e) => updateFunnelActivity(editingOpportunity.id, { ...activity, assignedTo: e.target.value })}
+                                                                        className="text-xs px-2 py-1 border border-ui-border bg-white rounded text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    >
+                                                                        {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                                                    </select>
                                                                 </div>
-                                                                <select
-                                                                    value={activity.assignedTo}
-                                                                    onChange={(e) => updateFunnelActivity(editingOpportunity.id, { ...activity, assignedTo: e.target.value })}
-                                                                    className="text-xs px-2 py-1 border border-ui-border bg-white rounded text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                >
-                                                                    {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                                                                </select>
                                                             </div>
-                                                        </div>
-                                                    </li>
-                                                ))}
+                                                        </li>
+                                                    );
+                                                })}
                                             </ul>
                                         )}
                                     </div>

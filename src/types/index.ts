@@ -256,6 +256,7 @@ export interface FunnelActivity {
     assignedTo: string; // userId
     dueDate?: string;
     dueTime?: string;
+    startedAt?: string; // Timestamp when activity timer started
 }
 
 export interface Opportunity {

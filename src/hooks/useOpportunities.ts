@@ -89,7 +89,7 @@ export const useOpportunities = () => {
                 // Criar atividades baseadas nos templates
                 if (templates && templates.length > 0) {
                     console.log('✅ Criando', templates.length, 'atividades...');
-                    const newActivities = templates.map(template => {
+                    const newActivities = templates.map((template, index) => {
                         // Calcular data de vencimento
                         const dueDate = new Date();
                         dueDate.setHours(dueDate.getHours() + (template.max_hours || 24));
@@ -102,7 +102,8 @@ export const useOpportunities = () => {
                             completed: false,
                             assigned_to: user.id, // Usa o UUID do usuário logado
                             due_date: dueDate.toISOString().split('T')[0],
-                            due_time: '12:00'
+                            due_time: '12:00',
+                            started_at: index === 0 ? new Date().toISOString() : null // First activity starts immediately
                         };
                     });
 
@@ -127,7 +128,8 @@ export const useOpportunities = () => {
                             completed: a.completed,
                             assignedTo: a.assigned_to,
                             dueDate: a.due_date,
-                            dueTime: a.due_time
+                            dueTime: a.due_time,
+                            startedAt: (a as any).started_at // Type assertion until migration is applied
                         }));
 
                         newOpportunity.activities = formattedActivities;
@@ -271,7 +273,8 @@ export const useOpportunities = () => {
                         completed: a.completed,
                         assignedTo: a.assigned_to,
                         dueDate: a.due_date,
-                        dueTime: a.due_time
+                        dueTime: a.due_time,
+                        startedAt: (a as any).started_at // Type assertion until migration is applied
                     }));
 
                     setOpportunities(prev => prev.map(o => {
@@ -327,6 +330,7 @@ export const useOpportunities = () => {
                     assignedTo: data.assigned_to,
                     dueDate: data.due_date || undefined,
                     dueTime: data.due_time || undefined,
+                    startedAt: (data as any).started_at || undefined,
                 };
 
                 setOpportunities(prev => prev.map(o => {
@@ -359,6 +363,26 @@ export const useOpportunities = () => {
 
             if (error) throw error;
 
+            // If activity was just completed, start the timer for the next activity
+            if (updatedActivity.completed) {
+                const opportunity = opportunities.find(o => o.id === opportunityId);
+                if (opportunity) {
+                    const currentIndex = opportunity.activities.findIndex(a => a.id === updatedActivity.id);
+                    const nextActivity = opportunity.activities[currentIndex + 1];
+
+                    // Start next activity timer if it exists and hasn't started yet
+                    if (nextActivity && !nextActivity.startedAt && !nextActivity.completed) {
+                        await supabase
+                            .from('funnel_activities')
+                            .update({ started_at: new Date().toISOString() } as any) // Type assertion until migration is applied
+                            .eq('id', nextActivity.id);
+
+                        // Update local state with started_at for next activity
+                        nextActivity.startedAt = new Date().toISOString();
+                    }
+                }
+            }
+
             setOpportunities(prev => prev.map(o => {
                 if (o.id === opportunityId) {
                     return {
@@ -372,7 +396,7 @@ export const useOpportunities = () => {
             console.error('Error updating activity:', error);
             toast.error('Erro ao atualizar atividade');
         }
-    }, []);
+    }, [opportunities]);
 
     // Origins Management
     const addOrigin = useCallback(async (origin: string) => {
