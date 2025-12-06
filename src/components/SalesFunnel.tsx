@@ -51,21 +51,26 @@ const OpportunityCard: React.FC<{ opportunity: Opportunity; ldrState: LDRState; 
             {currentStageActivities.length > 0 && (
                 <div className="mt-3 pt-2 border-t border-ui-border space-y-1">
                     <h5 className="text-xs font-bold text-text-secondary mb-1">Atividades do Estágio</h5>
-                    {currentStageActivities.map(activity => (
-                        <label key={activity.id} className="flex items-center text-xs text-text-primary cursor-pointer hover:bg-ui-hover p-1 rounded-md" onClick={e => e.stopPropagation()}>
-                            <input
-                                type="checkbox"
-                                checked={activity.completed}
-                                onChange={(e) => {
-                                    onActivityToggle(opportunity.id, { ...activity, completed: e.target.checked });
-                                }}
-                                className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary"
-                            />
-                            <span className={activity.completed ? 'line-through text-text-muted' : ''}>
-                                {activity.text}
-                            </span>
-                        </label>
-                    ))}
+                    {/* Show only the first activity */}
+                    <label key={currentStageActivities[0].id} className="flex items-center text-xs text-text-primary cursor-pointer hover:bg-ui-hover p-1 rounded-md" onClick={e => e.stopPropagation()}>
+                        <input
+                            type="checkbox"
+                            checked={currentStageActivities[0].completed}
+                            onChange={(e) => {
+                                onActivityToggle(opportunity.id, { ...currentStageActivities[0], completed: e.target.checked });
+                            }}
+                            className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary"
+                        />
+                        <span className={currentStageActivities[0].completed ? 'line-through text-text-muted' : ''}>
+                            {currentStageActivities[0].text}
+                        </span>
+                    </label>
+                    {/* Show count of remaining activities if there are more */}
+                    {currentStageActivities.length > 1 && (
+                        <div className="text-xs text-text-muted italic pl-6">
+                            + {currentStageActivities.length - 1} {currentStageActivities.length - 1 === 1 ? 'atividade adicional' : 'atividades adicionais'}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -129,7 +134,7 @@ const FunnelColumn: React.FC<{
 };
 
 const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
-    const { opportunities, clients, users, origins, addOpportunity, updateOpportunityStage, updateOpportunity, addFunnelActivity, updateFunnelActivity, policyTypes, insuranceCompanyContacts, funnelConfigurations, funnelStages } = ldrState;
+    const { opportunities, clients, users, origins, addOpportunity, updateOpportunityStage, updateOpportunity, deleteOpportunity, addFunnelActivity, updateFunnelActivity, policyTypes, insuranceCompanyContacts, funnelConfigurations, funnelStages } = ldrState;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingOpportunityId, setEditingOpportunityId] = useState<string | null>(null);
     const formRef = useRef<HTMLFormElement>(null);
@@ -373,6 +378,7 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
         handleCloseModal();
     };
 
+
     const handleAddNewActivity = () => {
         if (editingOpportunity && newActivity.text && newActivity.stage && newActivity.assignedTo) {
             addFunnelActivity(editingOpportunity.id, {
@@ -392,6 +398,19 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
             });
         }
     };
+
+    const handleDeleteOpportunity = () => {
+        if (editingOpportunity) {
+            const confirmDelete = window.confirm(
+                `Tem certeza que deseja excluir a oportunidade "${editingOpportunity.title}"? Esta ação não pode ser desfeita.`
+            );
+            if (confirmDelete) {
+                deleteOpportunity(editingOpportunity.id);
+                handleCloseModal();
+            }
+        }
+    };
+
 
     const displayedOpportunities = opportunities
         .filter(opp => opp.funnelType === activeFunnel)
@@ -635,19 +654,28 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
                                             <ul className="space-y-2">
                                                 {editingOpportunity.activities.map(activity => (
                                                     <li key={activity.id} className="text-sm text-text-primary p-2 bg-ui-background rounded-md">
-                                                        <div className="flex items-center justify-between">
-                                                            <label className="flex items-center flex-1">
-                                                                <input type="checkbox" checked={activity.completed} onChange={() => updateFunnelActivity(editingOpportunity.id, { ...activity, completed: !activity.completed })} className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary" />
+                                                        <div className="flex items-start justify-between gap-3">
+                                                            <label className="flex items-center flex-1 min-w-0">
+                                                                <input type="checkbox" checked={activity.completed} onChange={() => updateFunnelActivity(editingOpportunity.id, { ...activity, completed: !activity.completed })} className="mr-2 h-4 w-4 rounded border-ui-border text-brand-primary focus:ring-brand-primary flex-shrink-0" />
                                                                 <span className={activity.completed ? 'line-through text-text-muted' : ''}>{activity.text}</span>
                                                             </label>
-                                                            <div className="flex items-center gap-2 text-xs text-text-muted">
-                                                                {activity.dueDate && (
-                                                                    <span>📅 {new Date(activity.dueDate).toLocaleDateString('pt-BR')}</span>
-                                                                )}
-                                                                {activity.dueTime && (
-                                                                    <span>🕐 {activity.dueTime}</span>
-                                                                )}
-                                                                <span>{users.find(u => u.id === activity.assignedTo)?.name}</span>
+                                                            <div className="flex flex-col gap-1 text-xs text-text-muted flex-shrink-0">
+                                                                <div className="flex items-center gap-2">
+                                                                    {activity.dueDate && (
+                                                                        <span>📅 {new Date(activity.dueDate).toLocaleDateString('pt-BR')}</span>
+                                                                    )}
+                                                                    {activity.dueTime && (
+                                                                        <span>🕐 {activity.dueTime}</span>
+                                                                    )}
+                                                                </div>
+                                                                <select
+                                                                    value={activity.assignedTo}
+                                                                    onChange={(e) => updateFunnelActivity(editingOpportunity.id, { ...activity, assignedTo: e.target.value })}
+                                                                    className="text-xs px-2 py-1 border border-ui-border bg-white rounded text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                >
+                                                                    {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </li>
@@ -745,11 +773,24 @@ const SalesFunnel: React.FC<SalesFunnelProps> = ({ ldrState, showAlert }) => {
                                 <textarea name="notes" id="notes" value={opportunityFormData.notes} onChange={handleFormChange} rows={4} className="mt-1 block w-full px-3 py-2 border border-ui-border bg-white rounded-md shadow-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"></textarea>
                             </div>
 
-                            <div className="flex justify-end gap-4 pt-4 mt-6 border-t border-ui-border md:col-span-2">
-                                <Button type="button" variant="outline" onClick={handleCloseModal}>Cancelar</Button>
-                                <Button type="submit">
-                                    {editingOpportunity ? 'Salvar Alterações' : 'Criar Oportunidade'}
-                                </Button>
+
+                            <div className="flex justify-between gap-4 pt-4 mt-6 border-t border-ui-border md:col-span-2">
+                                {editingOpportunity && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleDeleteOpportunity}
+                                        className="border-error text-error hover:bg-error hover:text-white"
+                                    >
+                                        Excluir Oportunidade
+                                    </Button>
+                                )}
+                                <div className="flex gap-4 ml-auto">
+                                    <Button type="button" variant="outline" onClick={handleCloseModal}>Cancelar</Button>
+                                    <Button type="submit">
+                                        {editingOpportunity ? 'Salvar Alterações' : 'Criar Oportunidade'}
+                                    </Button>
+                                </div>
                             </div>
                         </form>
                     </div>
